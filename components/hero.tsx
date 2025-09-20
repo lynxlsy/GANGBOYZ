@@ -23,7 +23,7 @@ export function Hero() {
   }>>([
     {
       id: "hero-banner-1",
-      imageSrc: "/urban-streetwear-model-in-black-hoodie-against-dar.jpg",
+      imageSrc: "/banner-hero-1.svg",
       alt: "Gang BoyZ Hero Banner 1"
     }
   ])
@@ -33,20 +33,34 @@ export function Hero() {
     const loadBanners = () => {
       const savedBanners = localStorage.getItem("gang-boyz-homepage-banners")
       if (savedBanners) {
-        const banners: Banner[] = JSON.parse(savedBanners)
-        
-        // Procurar apenas pelo primeiro banner hero
-        const heroBanner1 = banners.find(banner => banner.id === "hero-banner-1")
-        
-        if (heroBanner1) {
-          const formattedBanners = [
-            {
+        try {
+          const banners: Banner[] = JSON.parse(savedBanners)
+          
+          // Converter banners hero para formato do carrossel
+          const heroBanner1 = banners.find(banner => banner.id === "hero-banner-1")
+          const heroBanner2 = banners.find(banner => banner.id === "hero-banner-2")
+          
+          const formattedBanners = []
+          if (heroBanner1) {
+            formattedBanners.push({
               id: heroBanner1.id,
-              imageSrc: heroBanner1.currentImage,
+              imageSrc: heroBanner1.currentImage || "/banner-hero-1.svg",
               alt: heroBanner1.name || "Gang BoyZ Hero Banner 1"
-            }
-          ]
-          setHeroBanners(formattedBanners)
+            })
+          }
+          if (heroBanner2) {
+            formattedBanners.push({
+              id: heroBanner2.id,
+              imageSrc: heroBanner2.currentImage || "/banner-hero-2.svg",
+              alt: heroBanner2.name || "Gang BoyZ Hero Banner 2"
+            })
+          }
+          
+          if (formattedBanners.length > 0) {
+            setHeroBanners(formattedBanners)
+          }
+        } catch (error) {
+          console.error("Erro ao carregar banners:", error)
         }
       }
     }
@@ -75,7 +89,5 @@ export function Hero() {
     }
   }, [])
 
-  console.log('🎯 Hero component - Banners carregados:', heroBanners)
-  
-  return <HeroCarousel banners={heroBanners} autoPlayInterval={4000} />
+  return <HeroCarousel banners={heroBanners} autoPlayInterval={5000} />
 }

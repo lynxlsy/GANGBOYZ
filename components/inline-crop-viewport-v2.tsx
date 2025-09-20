@@ -53,7 +53,12 @@ export function InlineCropViewport({ banner, onBannerUpdate, className = "" }: I
 
   // Inicializar BroadcastChannel
   useEffect(() => {
-    broadcastChannel.current = new BannerBroadcastChannel()
+    try {
+      broadcastChannel.current = new BannerBroadcastChannel()
+    } catch (error) {
+      console.warn('Erro ao inicializar BroadcastChannel:', error)
+      broadcastChannel.current = null
+    }
     return () => {
       broadcastChannel.current?.close()
     }
@@ -147,7 +152,13 @@ export function InlineCropViewport({ banner, onBannerUpdate, className = "" }: I
       onBannerUpdate(updatedBanner)
       
       // Disparar broadcast
-      broadcastChannel.current?.broadcast(banner.id, updatedBanner.version)
+      if (broadcastChannel.current) {
+        try {
+          broadcastChannel.current.broadcast(banner.id, updatedBanner.version)
+        } catch (error) {
+          console.warn('Erro ao fazer broadcast:', error)
+        }
+      }
       
       setIsEditing(false)
       setHistory([])

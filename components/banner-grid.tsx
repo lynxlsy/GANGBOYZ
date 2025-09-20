@@ -37,7 +37,7 @@ export function BannerGrid() {
             description: "Descubra os lançamentos mais ousados da temporada",
             icon: "",
             link: "",
-            image: "/urban-streetwear-model-in-black-hoodie-against-dar.jpg",
+            image: "/banner-hero.svg",
             mediaType: "image",
             color: "from-red-600/90 to-black/70"
           },
@@ -49,7 +49,7 @@ export function BannerGrid() {
             description: "Qualidade premium para o dia a dia",
             icon: "",
             link: "",
-            image: "/black-streetwear-hoodie-with-white-logo.jpg",
+            image: "/banner-hero.svg",
             mediaType: "image",
             color: "from-gray-800/90 to-black/70"
           },
@@ -61,7 +61,7 @@ export function BannerGrid() {
             description: "Complete seu look com nossos acessórios exclusivos",
             icon: "",
             link: "",
-            image: "/silver-chain-necklace-streetwear-accessory.jpg",
+            image: "/banner-hero.svg",
             mediaType: "image",
             color: "from-red-600/90 to-black/70"
           },
@@ -73,7 +73,7 @@ export function BannerGrid() {
             description: "Até 50% de desconto em peças selecionadas",
             icon: "",
             link: "",
-            image: "/black-t-shirt-with-neon-graphic-design.jpg",
+            image: "/banner-hero.svg",
             mediaType: "image",
             color: "from-red-500/90 to-black/70"
           }
@@ -107,23 +107,14 @@ export function BannerGrid() {
     }
   }, [])
   return (
-    <section className="py-16 bg-black">
-      <div className="container mx-auto px-4">
-        {/* Título da seção */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-            MAIS VENDIDOS
-          </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Descubra as peças que estão fazendo sucesso
-          </p>
-        </div>
+    <section className="pt-0 pb-0 bg-black">
+      <div className="w-full">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-4 gap-0 mb-0">
           {collections.map((collection) => (
             <div
               key={collection.id}
-              className="relative h-80 md:h-96 rounded-2xl overflow-hidden group cursor-pointer bg-gray-900"
+              className="relative h-[600px] overflow-hidden group cursor-pointer bg-gray-900"
               onClick={() => collection.link && (window.location.href = collection.link)}
             >
               {/* Background Media */}
@@ -149,30 +140,30 @@ export function BannerGrid() {
               </div>
 
               {/* Content */}
-              <div className="relative z-10 p-6 h-full flex flex-col justify-between">
+              <div className="relative z-10 p-4 h-full flex flex-col justify-between">
                 <div>
                   <div className="mb-3">
-                    <span className="text-xs font-bold tracking-wider text-white/90 uppercase bg-white/20 px-3 py-1 rounded-full">
+                    <span className="text-xs font-bold tracking-wider text-white/90 uppercase bg-white/20 px-3 py-1">
                       {collection.brand}
                     </span>
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-black text-white mb-2">
+                  <h3 className="text-lg font-black text-white mb-1">
                     {collection.name}
                   </h3>
-                  <p className="text-lg text-white/90 font-semibold mb-3">
+                  <p className="text-sm text-white/90 font-semibold mb-2">
                     {collection.subtitle}
                   </p>
-                  <p className="text-sm text-white/80 leading-relaxed">
+                  <p className="text-xs text-white/80 leading-relaxed">
                     {collection.description}
                   </p>
                 </div>
 
                 <Button
-                  size="lg"
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 w-fit rounded-full shadow-lg hover:shadow-red-500/25 transition-all duration-300"
+                  size="sm"
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 w-fit shadow-lg hover:shadow-red-500/25 transition-all duration-300"
                 >
-                  {collection.link ? 'EXPLORAR' : 'VER MAIS'}
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  {collection.link ? 'EXPLORAR' : 'CONFIRA'}
+                  <ArrowRight className="ml-1 h-3 w-3" />
                 </Button>
               </div>
 

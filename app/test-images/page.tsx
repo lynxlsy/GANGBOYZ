@@ -104,7 +104,7 @@ export default function TestImagesPage() {
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   console.error(`❌ Erro no carrossel: ${banner.imageSrc}`)
-                  e.currentTarget.src = "/placeholder.jpg"
+                  e.currentTarget.src = "/placeholder-default.svg"
                 }}
                 onLoad={() => {
                   console.log(`✅ Carrossel carregada: ${banner.imageSrc}`)

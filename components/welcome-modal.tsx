@@ -12,9 +12,29 @@ interface WelcomeModalProps {
 
 export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
   const [neverShowAgain, setNeverShowAgain] = useState(false)
+  const [config, setConfig] = useState({
+    enabled: true,
+    displayTime: 4,
+    title: "Seja bem-vindo",
+    description: "Descubra nossa coleção exclusiva de streetwear premium. Peças únicas que expressam sua individualidade e estilo urbano.",
+    buttonText: "Explorar Loja"
+  })
 
   useEffect(() => {
     if (isOpen) {
+      // Carregar configuração salva
+      const savedConfig = localStorage.getItem('welcome-modal-config')
+      if (savedConfig) {
+        const parsedConfig = JSON.parse(savedConfig)
+        setConfig(parsedConfig)
+        
+        // Verificar se o modal está desativado
+        if (!parsedConfig.enabled) {
+          onClose()
+          return
+        }
+      }
+
       // Check if user has disabled the modal
       const modalDisabled = localStorage.getItem('welcome-modal-disabled')
       if (modalDisabled === 'true') {
@@ -24,11 +44,11 @@ export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
 
       const timer = setTimeout(() => {
         onClose()
-      }, 4000) // Auto close after 4 seconds
+      }, config.displayTime * 1000) // Auto close after configured time
 
       return () => clearTimeout(timer)
     }
-  }, [isOpen, onClose])
+  }, [isOpen, onClose, config.displayTime])
 
   const handleClose = () => {
     if (neverShowAgain) {
@@ -72,15 +92,14 @@ export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
             {/* Welcome message */}
             <div className="space-y-3">
               <h1 className="text-3xl md:text-4xl font-bold text-white tracking-wide">
-                Seja bem-vindo
+                {config.title}
               </h1>
               <div className="w-16 h-1 bg-red-600 mx-auto rounded-full"></div>
             </div>
 
             {/* Description */}
             <p className="text-base text-white/80 max-w-sm mx-auto leading-relaxed">
-              Descubra nossa coleção exclusiva de streetwear premium. 
-              Peças únicas que expressam sua individualidade e estilo urbano.
+              {config.description}
             </p>
 
             {/* Action button */}
@@ -89,7 +108,7 @@ export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
                 onClick={handleClose}
                 className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 text-base transition-all duration-300 hover:scale-105 shadow-lg shadow-red-600/25"
               >
-                Explorar Loja
+                {config.buttonText}
               </Button>
             </div>
 
@@ -117,13 +136,15 @@ export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
             <div className="pt-4">
               <div className="w-20 h-1 bg-white/20 rounded-full mx-auto overflow-hidden">
                 <div
-                  className="h-full bg-red-600 rounded-full animate-[shrink_4s_linear_forwards]"
+                  className="h-full bg-red-600 rounded-full"
                   style={{
-                    animation: "shrink 4s linear forwards",
+                    animation: `shrink ${config.displayTime}s linear forwards`,
                   }}
                 />
               </div>
-              <p className="text-xs text-white/50 mt-2">Fechará automaticamente em 4s</p>
+              <p className="text-xs text-white/50 mt-2">
+                Fechará automaticamente em {config.displayTime}s
+              </p>
             </div>
           </div>
         </div>

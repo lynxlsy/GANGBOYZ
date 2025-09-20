@@ -1,288 +1,459 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Star, Image as ImageIcon, Settings, Palette, BarChart3, Phone, Flame, Shirt, Package } from "lucide-react"
+import { AdminLayout } from "@/components/admin-layout"
+import {
+  Star,
+  Image as ImageIcon,
+  Settings,
+  BarChart3,
+  Phone,
+  Flame,
+  Shirt,
+  Package,
+  ArrowRight,
+  Shield,
+  Eye,
+  TrendingUp,
+  Trash2,
+  Users,
+  ShoppingBag,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Edit3,
+  Save,
+  X,
+  GripVertical,
+  Zap,
+  Activity,
+  Database,
+  Globe
+} from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
 export default function AdminPage() {
+  const [isEditing, setIsEditing] = useState(false)
+  const [stats, setStats] = useState({
+    totalProducts: "Esperando Sync",
+    activeBanners: "Esperando Sync",
+    totalOrders: "Esperando Sync",
+    lastUpdate: "Esperando Sync"
+  })
+
+  // Configuração editável dos cards de estatísticas
+  const [statsCards, setStatsCards] = useState([
+    {
+      id: "products",
+      title: "Produtos",
+      value: "Esperando Sync",
+      icon: Package,
+      description: "Total de produtos cadastrados",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-600"
+    },
+    {
+      id: "banners",
+      title: "Banners Ativos",
+      value: "Esperando Sync",
+      icon: ImageIcon,
+      description: "Banners em exibição",
+      color: "from-green-500 to-green-600",
+      bgColor: "bg-green-50",
+      textColor: "text-green-600"
+    },
+    {
+      id: "orders",
+      title: "Pedidos",
+      value: "Esperando Sync",
+      icon: ShoppingBag,
+      description: "Total de pedidos realizados",
+      color: "from-purple-500 to-purple-600",
+      bgColor: "bg-purple-50",
+      textColor: "text-purple-600"
+    },
+    {
+      id: "update",
+      title: "Última Atualização",
+      value: "Esperando Sync",
+      icon: Clock,
+      description: "Última sincronização",
+      color: "from-orange-500 to-orange-600",
+      bgColor: "bg-orange-50",
+      textColor: "text-orange-600"
+    }
+  ])
+
+  // Configuração dos cards de gerenciamento
+  const [actionCards, setActionCards] = useState([
+    {
+      id: "products-management",
+      title: "Gerenciamento de Produtos",
+      description: "Camisetas, Moletons, Jaquetas, Calças, Shorts/Bermudas",
+      icon: Package,
+      href: "/admin/produtos",
+      category: "produtos",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-600"
+    },
+    {
+      id: "banners-management",
+      title: "Banners e Promoções",
+      description: "Esperando Sync",
+      icon: ImageIcon,
+      href: "/admin/banners",
+      category: "marketing",
+      color: "from-green-500 to-green-600",
+      bgColor: "bg-green-50",
+      textColor: "text-green-600"
+    },
+    {
+      id: "collections-management",
+      title: "Coleções",
+      description: "Esperando Sync",
+      icon: Star,
+      href: "/admin/colecoes",
+      category: "organizacao",
+      color: "from-purple-500 to-purple-600",
+      bgColor: "bg-purple-50",
+      textColor: "text-purple-600"
+    },
+    {
+      id: "produtos-destaque",
+      title: "Produtos em Destaque",
+      description: "Gerencie os produtos da seção HOT",
+      icon: Flame,
+      href: "/admin/produtos-destaque",
+      category: "destaques",
+      color: "from-red-500 to-red-600",
+      bgColor: "bg-red-50",
+      textColor: "text-red-600"
+    },
+    {
+      id: "ofertas-especiais",
+      title: "Ofertas Especiais",
+      description: "Gerencie produtos em promoção",
+      icon: Star,
+      href: "/admin/ofertas",
+      category: "ofertas",
+      color: "from-yellow-500 to-yellow-600",
+      bgColor: "bg-yellow-50",
+      textColor: "text-yellow-600"
+    },
+    {
+      id: "explore-categories",
+      title: "Explore Categories",
+      description: "Gerencie categorias da seção EXPLORE",
+      icon: Eye,
+      href: "/admin/explore-categories",
+      category: "categorias",
+      color: "from-indigo-500 to-indigo-600",
+      bgColor: "bg-indigo-50",
+      textColor: "text-indigo-600"
+    },
+    {
+      id: "destaques-temporada",
+      title: "Destaques da Temporada",
+      description: "Edite título e descrição da seção DESTAQUES",
+      icon: Star,
+      href: "/admin/destaques-temporada",
+      category: "conteudo",
+      color: "from-pink-500 to-pink-600",
+      bgColor: "bg-pink-50",
+      textColor: "text-pink-600"
+    },
+    {
+      id: "clear-prod-products",
+      title: "Limpeza de Produtos",
+      description: "Remover produtos PROD001-PROD005 do localStorage",
+      icon: Trash2,
+      href: "/admin/clear-prod-products",
+      category: "limpeza",
+      color: "from-gray-500 to-gray-600",
+      bgColor: "bg-gray-50",
+      textColor: "text-gray-600"
+    },
+    {
+      id: "security-login",
+      title: "Segurança e Login",
+      description: "Configurações de segurança e acesso ao painel administrativo",
+      icon: Shield,
+      href: "/admin/seguranca",
+      category: "seguranca",
+      color: "from-emerald-500 to-emerald-600",
+      bgColor: "bg-emerald-50",
+      textColor: "text-emerald-600"
+    }
+  ])
+
+  // Funções de edição
+  const handleSaveChanges = () => {
+    const config = {
+      timestamp: new Date().toISOString(),
+      version: "1.0.0",
+      changes: {
+        statsCards: statsCards.map(card => ({
+          id: card.id,
+          title: card.title,
+          value: card.value,
+          description: card.description,
+          action: "update"
+        })),
+        actionCards: actionCards.map(card => ({
+          id: card.id,
+          title: card.title,
+          description: card.description,
+          href: card.href,
+          category: card.category,
+          action: "update"
+        }))
+      }
+    }
+    
+    const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'admin-dashboard-config.json'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    
+    setIsEditing(false)
+    alert('Configurações salvas! Arquivo baixado com instruções para aplicar no código.')
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditing(false)
+  }
+
+  const updateStatsCard = (id: string, field: string, value: string) => {
+    setStatsCards(cards => cards.map(card => 
+      card.id === id ? { ...card, [field]: value } : card
+    ))
+  }
+
+  const updateActionCard = (id: string, field: string, value: string) => {
+    setActionCards(cards => cards.map(card => 
+      card.id === id ? { ...card, [field]: value } : card
+    ))
+  }
+
+  const deleteActionCard = (id: string) => {
+    if (confirm('Tem certeza que deseja excluir este card?')) {
+      setActionCards(cards => cards.filter(card => card.id !== id))
+    }
+  }
+
+  const deleteStatsCard = (id: string) => {
+    if (confirm('Tem certeza que deseja excluir este card de estatística?')) {
+      setStatsCards(cards => cards.filter(card => card.id !== id))
+    }
+  }
+
+  useEffect(() => {
+    // Manter tudo como "Esperando Sync" até sincronização
+  }, [])
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <Image 
-                src="/logo-gang-boyz-new.svg" 
-                alt="Gang BoyZ" 
-                width={120} 
-                height={48} 
-                className="h-16 w-auto filter brightness-110 drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]"
-              />
-            </div>
+    <AdminLayout 
+      title="Painel Administrativo" 
+      subtitle="Gang BoyZ E-commerce"
+      showEditControls={true}
+      isEditing={isEditing}
+      onEditToggle={() => setIsEditing(!isEditing)}
+      onSave={handleSaveChanges}
+    >
+
+      {/* Stats Cards */}
+      <section className="mb-8" aria-labelledby="stats-heading">
+        <h2 id="stats-heading" className="text-lg font-semibold text-gray-900 mb-6 text-center">Estatísticas</h2>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {statsCards.map((card, index) => (
+            <Card key={card.id} className="p-6 hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm border border-gray-200 group">
+              {isEditing ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => deleteStatsCard(card.id)}
+                        className="text-red-600 hover:text-red-700 transition-colors duration-300 p-2 hover:bg-red-50 rounded"
+                        aria-label="Excluir card"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <div className={`w-12 h-12 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center shadow-lg`}>
+                      <card.icon className="h-6 w-6 text-white" />
+                    </div>
+                  </div>
+                  <input
+                    type="text"
+                    value={card.title}
+                    onChange={(e) => updateStatsCard(card.id, 'title', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+                    placeholder="Título do card"
+                    aria-label="Título do card"
+                  />
+                  <input
+                    type="text"
+                    value={card.value}
+                    onChange={(e) => updateStatsCard(card.id, 'value', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-lg font-bold focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+                    placeholder="Valor"
+                    aria-label="Valor do card"
+                  />
+                  <input
+                    type="text"
+                    value={card.description}
+                    onChange={(e) => updateStatsCard(card.id, 'description', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+                    placeholder="Descrição"
+                    aria-label="Descrição do card"
+                  />
+                </div>
+              ) : (
+                <div className="text-center">
+                  <div className={`w-12 h-12 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform mx-auto mb-3`}>
+                    <card.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <p className="text-gray-600 text-sm font-medium mb-1">{card.title}</p>
+                  <p className="text-2xl font-bold text-gray-900 mb-1">{card.value}</p>
+                  <p className="text-xs text-gray-500">{card.description}</p>
+                </div>
+              )}
+            </Card>
+          ))}
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent mb-4">
-            Admin Dashboard
-          </h1>
-          <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto px-4">
-            Gerencie todos os aspectos do seu e-commerce Gang BoyZ com facilidade e precisão
-          </p>
         </div>
+      </section>
 
-        {/* Navigation Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-          {/* Ofertas Especiais */}
-          <Link href="/admin/ofertas">
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-red-500/50 transition-all duration-500 cursor-pointer transform hover:scale-105 hover:shadow-2xl hover:shadow-red-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-red-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative p-4 md:p-8 text-center">
-                <div className="mb-4 md:mb-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Star className="h-8 w-8 md:h-10 md:w-10 text-white" />
+      {/* Action Cards */}
+      <section className="mb-8" aria-labelledby="management-heading">
+        <h2 id="management-heading" className="text-lg font-semibold text-gray-900 mb-6 text-center">Gerenciamento</h2>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {actionCards.map((card, index) => (
+            <Link key={card.id} href={card.href} className="block group">
+              <Card className="p-6 hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 bg-white/80 backdrop-blur-sm h-full group-hover:border-red-300 group-hover:scale-[1.02]">
+                <div className="text-center h-full flex flex-col">
+                  <div className={`w-12 h-12 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg mx-auto mb-4`}>
+                    <card.icon className="h-6 w-6 text-white" />
                   </div>
-                  <h2 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-red-400 transition-colors">Ofertas Especiais</h2>
-                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
-                    Gerencie produtos promocionais e em destaque na seção "OFERTAS ESPECIAIS"
-                  </p>
-                </div>
-                <Button className="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-semibold py-2 md:py-3 rounded-xl transition-all duration-300 group-hover:shadow-lg group-hover:shadow-red-500/25 text-sm md:text-base">
-                  Acessar Ofertas
-                </Button>
-              </div>
-            </Card>
-          </Link>
-
-          {/* Banners */}
-          <Link href="/admin/banners">
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-blue-500/50 transition-all duration-500 cursor-pointer transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative p-4 md:p-8 text-center">
-                <div className="mb-4 md:mb-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <ImageIcon className="h-8 w-8 md:h-10 md:w-10 text-white" />
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                      {card.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                      {card.description}
+                    </p>
                   </div>
-                  <h2 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-blue-400 transition-colors">Banners</h2>
-                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
-                    Gerencie banners promocionais com suporte a imagens, vídeos e GIFs
-                  </p>
-                </div>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold py-2 md:py-3 rounded-xl transition-all duration-300 group-hover:shadow-lg group-hover:shadow-blue-500/25 text-sm md:text-base">
-                  Acessar Banners
-                </Button>
-              </div>
-            </Card>
-          </Link>
-
-          {/* Coleções */}
-          <Link href="/admin/colecoes">
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-purple-500/50 transition-all duration-500 cursor-pointer transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative p-4 md:p-8 text-center">
-                <div className="mb-4 md:mb-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Palette className="h-8 w-8 md:h-10 md:w-10 text-white" />
+                  <div className="flex items-center justify-center text-red-600 text-sm font-medium">
+                    <span>Acessar</span>
+                    <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <h2 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-purple-400 transition-colors">Coleções</h2>
-                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
-                    Gerencie coleções com banners promocionais e links personalizados
-                  </p>
                 </div>
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white font-semibold py-2 md:py-3 rounded-xl transition-all duration-300 group-hover:shadow-lg group-hover:shadow-purple-500/25 text-sm md:text-base">
-                  Acessar Coleções
-                </Button>
-              </div>
-            </Card>
-          </Link>
-
-          {/* Gráficos */}
-          <Link href="/admin/graficos">
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-green-500/50 transition-all duration-500 cursor-pointer transform hover:scale-105 hover:shadow-2xl hover:shadow-green-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative p-4 md:p-8 text-center">
-                <div className="mb-4 md:mb-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <BarChart3 className="h-8 w-8 md:h-10 md:w-10 text-white" />
-                  </div>
-                  <h2 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-green-400 transition-colors">Gráficos</h2>
-                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
-                    Personalize cores e temas do site com diferentes atmosferas visuais
-                  </p>
-                </div>
-                <Button className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-semibold py-2 md:py-3 rounded-xl transition-all duration-300 group-hover:shadow-lg group-hover:shadow-green-500/25 text-sm md:text-base">
-                  Acessar Gráficos
-                </Button>
-              </div>
-            </Card>
-          </Link>
-
-          {/* Contatos */}
-          <Link href="/admin/contatos">
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-orange-500/50 transition-all duration-500 cursor-pointer transform hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative p-4 md:p-8 text-center">
-                <div className="mb-4 md:mb-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Phone className="h-8 w-8 md:h-10 md:w-10 text-white" />
-                  </div>
-                  <h2 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-orange-400 transition-colors">Contatos</h2>
-                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
-                    Gerencie links de redes sociais e canais de comunicação
-                  </p>
-                </div>
-                <Button className="w-full bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white font-semibold py-2 md:py-3 rounded-xl transition-all duration-300 group-hover:shadow-lg group-hover:shadow-orange-500/25 text-sm md:text-base">
-                  Acessar Contatos
-                </Button>
-              </div>
-            </Card>
-          </Link>
-
-          {/* Produtos HOT */}
-          <Link href="/admin/hot">
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-red-500/50 transition-all duration-500 cursor-pointer transform hover:scale-105 hover:shadow-2xl hover:shadow-red-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-red-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative p-4 md:p-8 text-center">
-                <div className="mb-4 md:mb-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Flame className="h-8 w-8 md:h-10 md:w-10 text-white" />
-                  </div>
-                  <h2 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-red-400 transition-colors">Produtos HOT</h2>
-                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
-                    Gerencie as peças mais em alta com IDs únicos na homepage
-                  </p>
-                </div>
-                <Button className="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-semibold py-2 md:py-3 rounded-xl transition-all duration-300 group-hover:shadow-lg group-hover:shadow-red-500/25 text-sm md:text-base">
-                  Acessar HOT
-                </Button>
-              </div>
-            </Card>
-          </Link>
-
-          {/* Recomendações de Roupas */}
-          <Link href="/admin/recomendacoes">
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-indigo-500/50 transition-all duration-500 cursor-pointer transform hover:scale-105 hover:shadow-2xl hover:shadow-indigo-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative p-4 md:p-8 text-center">
-                <div className="mb-4 md:mb-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Shirt className="h-8 w-8 md:h-10 md:w-10 text-white" />
-                  </div>
-                  <h2 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-indigo-400 transition-colors">Recomendações</h2>
-                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
-                    Gerencie recomendações com carrossel infinito acima das coleções
-                  </p>
-                </div>
-                <Button className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-semibold py-2 md:py-3 rounded-xl transition-all duration-300 group-hover:shadow-lg group-hover:shadow-indigo-500/25 text-sm md:text-base">
-                  Acessar Recomendações
-                </Button>
-              </div>
-            </Card>
-          </Link>
-
-          {/* Inicialização de Produtos */}
-          <Link href="/admin/init-products">
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-yellow-500/50 transition-all duration-500 cursor-pointer transform hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-yellow-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative p-4 md:p-8 text-center">
-                <div className="mb-4 md:mb-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Package className="h-8 w-8 md:h-10 md:w-10 text-white" />
-                  </div>
-                  <h2 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-yellow-400 transition-colors">Produtos Demo</h2>
-                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
-                    Adicione produtos demonstrativos automaticamente
-                  </p>
-                </div>
-                <Button className="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-white font-semibold py-2 md:py-3 rounded-xl transition-all duration-300 group-hover:shadow-lg group-hover:shadow-yellow-500/25 text-sm md:text-base">
-                  Adicionar Produtos
-                </Button>
-              </div>
-            </Card>
-          </Link>
-
-          {/* Debug de Produtos */}
-          <Link href="/debug-products">
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-orange-500/50 transition-all duration-500 cursor-pointer transform hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative p-4 md:p-8 text-center">
-                <div className="mb-4 md:mb-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Package className="h-8 w-8 md:h-10 md:w-10 text-white" />
-                  </div>
-                  <h2 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-orange-400 transition-colors">Debug Produtos</h2>
-                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
-                    Verifique e adicione produtos manualmente
-                  </p>
-                </div>
-                <Button className="w-full bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white font-semibold py-2 md:py-3 rounded-xl transition-all duration-300 group-hover:shadow-lg group-hover:shadow-orange-500/25 text-sm md:text-base">
-                  Debug Produtos
-                </Button>
-              </div>
-            </Card>
-          </Link>
-
-          {/* Forçar Atualização */}
-          <Link href="/force-update-products">
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-red-500/50 transition-all duration-500 cursor-pointer transform hover:scale-105 hover:shadow-2xl hover:shadow-red-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-red-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative p-4 md:p-8 text-center">
-                <div className="mb-4 md:mb-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <Package className="h-8 w-8 md:h-10 md:w-10 text-white" />
-                  </div>
-                  <h2 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-red-400 transition-colors">Forçar Update</h2>
-                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
-                    Force atualização dos produtos e recarregue a página
-                  </p>
-                </div>
-                <Button className="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-semibold py-2 md:py-3 rounded-xl transition-all duration-300 group-hover:shadow-lg group-hover:shadow-red-500/25 text-sm md:text-base">
-                  Forçar Update
-                </Button>
-              </div>
-            </Card>
-          </Link>
+              </Card>
+            </Link>
+          ))}
+          </div>
         </div>
+      </section>
 
-        {/* Additional Info */}
-        <div className="mt-12 md:mt-16 text-center">
-          <Card className="p-6 md:p-8 bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700">
-            <div className="max-w-3xl mx-auto">
-              <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-r from-gray-600 to-gray-500 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-                <Settings className="h-6 w-6 md:h-8 md:w-8 text-white" />
+      {/* System Status */}
+      <section className="mb-8" aria-labelledby="status-heading">
+        <h2 id="status-heading" className="text-lg font-semibold text-gray-900 mb-6 text-center">Status do Sistema</h2>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <Card className="p-6 bg-white/80 backdrop-blur-sm border border-gray-200">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3 md:mb-4">Sistema de Gerenciamento</h3>
-              <p className="text-gray-400 text-base md:text-lg leading-relaxed mb-4 md:mb-6 px-4">
-                Gerencie todos os aspectos do seu e-commerce Gang BoyZ com facilidade e precisão. 
-                Todas as alterações são salvas automaticamente e aparecem imediatamente no site principal.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-6 md:mt-8">
-                <div className="text-center">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-green-500/20 rounded-lg flex items-center justify-center mx-auto mb-2 md:mb-3">
-                    <span className="text-green-400 text-lg md:text-xl">⚡</span>
-                  </div>
-                  <h4 className="text-white font-semibold mb-1 md:mb-2 text-sm md:text-base">Tempo Real</h4>
-                  <p className="text-gray-400 text-xs md:text-sm">Alterações aplicadas instantaneamente</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mx-auto mb-2 md:mb-3">
-                    <span className="text-blue-400 text-lg md:text-xl">🔒</span>
-                  </div>
-                  <h4 className="text-white font-semibold mb-1 md:mb-2 text-sm md:text-base">Seguro</h4>
-                  <p className="text-gray-400 text-xs md:text-sm">Dados protegidos e backup automático</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mx-auto mb-2 md:mb-3">
-                    <span className="text-purple-400 text-lg md:text-xl">🎨</span>
-                  </div>
-                  <h4 className="text-white font-semibold mb-1 md:mb-2 text-sm md:text-base">Personalizável</h4>
-                  <p className="text-gray-400 text-xs md:text-sm">Complete controle sobre o design</p>
-                </div>
+              <p className="text-gray-900 font-semibold text-sm sm:text-base mb-1">Sistema Online</p>
+              <p className="text-gray-600 text-xs sm:text-sm">Todos os serviços funcionando</p>
+            </div>
+          </Card>
+          <Card className="p-6 bg-white/80 backdrop-blur-sm border border-gray-200">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <Eye className="h-6 w-6 text-blue-600" />
               </div>
+              <p className="text-gray-900 font-semibold text-sm sm:text-base mb-1">Site Ativo</p>
+              <p className="text-gray-600 text-xs sm:text-sm">Homepage funcionando normalmente</p>
+            </div>
+          </Card>
+          <Card className="p-6 bg-white/80 backdrop-blur-sm border border-gray-200">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <Users className="h-6 w-6 text-purple-600" />
+              </div>
+              <p className="text-gray-900 font-semibold text-sm sm:text-base mb-1">Usuários Ativos</p>
+              <p className="text-gray-600 text-xs sm:text-sm">Sistema de autenticação OK</p>
+            </div>
+          </Card>
+          <Card className="p-6 bg-white/80 backdrop-blur-sm border border-gray-200">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <AlertCircle className="h-6 w-6 text-orange-600" />
+              </div>
+              <p className="text-gray-900 font-semibold text-sm sm:text-base mb-1">Backup Automático</p>
+              <p className="text-gray-600 text-xs sm:text-sm">Último backup: Agora</p>
+            </div>
+          </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer Info */}
+      <footer className="text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Card className="p-8 bg-white/80 backdrop-blur-sm border border-gray-200 shadow-sm">
+            <div className="mx-auto">
+            <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <Settings className="h-8 w-8 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              Sistema de Gerenciamento Gang BoyZ
+            </h3>
+            <p className="text-gray-600 text-lg leading-relaxed mb-8 px-4">
+              Controle total do seu e-commerce com interface intuitiva e funcionalidades avançadas. 
+              Todas as alterações são aplicadas em tempo real e sincronizadas automaticamente.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+              <div className="text-center group">
+                <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Zap className="h-6 w-6 text-red-600" />
+                </div>
+                <h4 className="text-gray-900 font-semibold mb-2 text-sm sm:text-base">Tempo Real</h4>
+                <p className="text-gray-600 text-xs sm:text-sm">Alterações aplicadas instantaneamente no site</p>
+              </div>
+              <div className="text-center group">
+                <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Shield className="h-6 w-6 text-red-600" />
+                </div>
+                <h4 className="text-gray-900 font-semibold mb-2 text-sm sm:text-base">Seguro</h4>
+                <p className="text-gray-600 text-xs sm:text-sm">Dados protegidos com backup automático</p>
+              </div>
+              <div className="text-center group">
+                <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <BarChart3 className="h-6 w-6 text-red-600" />
+                </div>
+                <h4 className="text-gray-900 font-semibold mb-2 text-sm sm:text-base">Personalizável</h4>
+                <p className="text-gray-600 text-xs sm:text-sm">Controle completo sobre design e conteúdo</p>
+              </div>
+            </div>
             </div>
           </Card>
         </div>
-      </div>
-    </div>
+      </footer>
+    </AdminLayout>
   )
 }

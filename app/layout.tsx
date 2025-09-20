@@ -7,6 +7,8 @@ import { Suspense } from "react"
 import { CartProvider } from "@/lib/cart-context"
 import { AuthProvider } from "@/lib/auth-context"
 import { ThemeProvider } from "@/lib/theme-context"
+import { CardsProvider } from "@/lib/cards-context"
+import { ProductsProvider } from "@/lib/products-context-simple"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -26,7 +28,11 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <CartProvider>
-              <Suspense fallback={null}>{children}</Suspense>
+              <CardsProvider>
+                <ProductsProvider>
+                  <Suspense fallback={null}>{children}</Suspense>
+                </ProductsProvider>
+              </CardsProvider>
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>

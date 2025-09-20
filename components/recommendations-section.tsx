@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useTheme } from "@/lib/theme-context"
+import { StandardProductCard } from "@/components/standard-product-card"
 
 interface Recommendation {
   id: string
@@ -63,7 +64,7 @@ export function RecommendationsSection() {
       description: "Camiseta confortável com design urbano",
       price: 89.90,
       originalPrice: 129.90,
-      image: "/black-t-shirt-with-neon-graphic-design.jpg",
+      image: "/placeholder-default.svg",
       category: "Camisetas",
       isActive: true
     },
@@ -73,7 +74,7 @@ export function RecommendationsSection() {
       description: "Moletom com capuz e bolsos laterais",
       price: 149.90,
       originalPrice: 199.90,
-      image: "/black-streetwear-hoodie-with-white-logo.jpg",
+      image: "/placeholder-default.svg",
       category: "Moletons",
       isActive: true
     },
@@ -83,7 +84,7 @@ export function RecommendationsSection() {
       description: "Jaqueta oversized com design exclusivo",
       price: 199.90,
       originalPrice: 279.90,
-      image: "/black-oversized-streetwear-jacket.jpg",
+      image: "/placeholder-default.svg",
       category: "Jaquetas",
       isActive: true
     },
@@ -93,7 +94,7 @@ export function RecommendationsSection() {
       description: "Calça cargo com bolsos funcionais",
       price: 179.90,
       originalPrice: 229.90,
-      image: "/black-cargo-streetwear.png",
+      image: "/placeholder-default.svg",
       category: "Calças",
       isActive: true
     },
@@ -103,7 +104,7 @@ export function RecommendationsSection() {
       description: "Boné com bordado premium",
       price: 79.90,
       originalPrice: 99.90,
-      image: "/black-snapback-cap-with-white-embroidery.jpg",
+      image: "/placeholder-default.svg",
       category: "Acessórios",
       isActive: true
     },
@@ -113,7 +114,7 @@ export function RecommendationsSection() {
       description: "Colar de corrente prateada",
       price: 59.90,
       originalPrice: 79.90,
-      image: "/silver-chain-necklace-streetwear-accessory.jpg",
+      image: "/placeholder-default.svg",
       category: "Acessórios",
       isActive: true
     },
@@ -123,14 +124,64 @@ export function RecommendationsSection() {
       description: "Camiseta básica com logo estampado",
       price: 69.90,
       originalPrice: 99.90,
-      image: "/black-t-shirt-with-neon-graphic-design.jpg",
+      image: "/placeholder-default.svg",
       category: "Camisetas",
+      isActive: true
+    },
+    {
+      id: "MOL008",
+      name: "Moletom Zíper",
+      description: "Moletom com zíper frontal",
+      price: 179.90,
+      originalPrice: 229.90,
+      image: "/placeholder-default.svg",
+      category: "Moletons",
+      isActive: true
+    },
+    {
+      id: "JAQ009",
+      name: "Jaqueta Denim",
+      description: "Jaqueta jeans clássica",
+      price: 219.90,
+      originalPrice: 279.90,
+      image: "/placeholder-default.svg",
+      category: "Jaquetas",
+      isActive: true
+    },
+    {
+      id: "CAL010",
+      name: "Calça Social",
+      description: "Calça social elegante",
+      price: 189.90,
+      originalPrice: 249.90,
+      image: "/placeholder-default.svg",
+      category: "Calças",
+      isActive: true
+    },
+    {
+      id: "SHO011",
+      name: "Short Casual",
+      description: "Short casual confortável",
+      price: 79.90,
+      originalPrice: 99.90,
+      image: "/placeholder-default.svg",
+      category: "Shorts",
+      isActive: true
+    },
+    {
+      id: "ACE012",
+      name: "Pulseira de Couro",
+      description: "Pulseira de couro genuíno",
+      price: 49.90,
+      originalPrice: 69.90,
+      image: "/placeholder-default.svg",
+      category: "Acessórios",
       isActive: true
     }
   ]
 
   const allRecommendations = recommendations.length > 0 ? recommendations : demoRecommendations
-  const displayRecommendations = allRecommendations.slice(0, 4) // Limitar a 4 imagens
+  const displayRecommendations = allRecommendations.slice(0, 12) // Limitar a 12 imagens (2 linhas de 6)
 
   // Função para scroll infinito no mobile
   const handleScroll = () => {
@@ -202,20 +253,18 @@ export function RecommendationsSection() {
       <div className="container mx-auto px-4">
 
         {/* Desktop - Grid de produtos */}
-        <div className="hidden md:grid grid-cols-4 gap-6">
+        <div className="hidden md:grid grid-cols-6 gap-3 md:gap-4">
           {displayRecommendations.map((recommendation, index) => (
-            <div key={recommendation.id} className="relative w-full h-80 rounded-lg overflow-hidden group shadow-lg border border-gray-700/50">
-              <img
-                src={recommendation.image}
-                alt={recommendation.name}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                <div className="absolute bottom-3 left-3 bg-black/95 text-white text-sm font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm border border-white/30 shadow-lg">
-                  {recommendation.id}
-                </div>
-              </div>
-            </div>
+            <StandardProductCard
+              key={recommendation.id}
+              product={{
+                id: recommendation.id,
+                name: recommendation.name,
+                price: recommendation.price,
+                image: recommendation.image,
+                originalPrice: recommendation.originalPrice
+              }}
+            />
           ))}
         </div>
 

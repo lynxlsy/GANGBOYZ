@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Save, RefreshCw, Instagram } from "lucide-react"
+import { ArrowLeft, Save, RefreshCw, Instagram, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -37,6 +37,12 @@ export default function ContatosPage() {
           platform: "Instagram",
           url: "https://instagram.com/gangboyz",
           isActive: true
+        },
+        {
+          id: "whatsapp",
+          platform: "WhatsApp",
+          url: "https://wa.me/5511999999999",
+          isActive: true
         }
       ]
       setContacts(defaultContacts)
@@ -55,7 +61,13 @@ export default function ContatosPage() {
     try {
       localStorage.setItem("gang-boyz-contacts", JSON.stringify(contacts))
       
-      // Disparar evento para atualizar o footer
+      // Salvar link do WhatsApp separadamente para o botão
+      const whatsappContact = contacts.find(contact => contact.id === 'whatsapp')
+      if (whatsappContact) {
+        localStorage.setItem("gang-boyz-whatsapp-link", whatsappContact.url)
+      }
+      
+      // Disparar evento para atualizar o footer e botão WhatsApp
       window.dispatchEvent(new CustomEvent('contactsUpdated'))
       
       toast.success("Contatos salvos com sucesso!")
@@ -72,6 +84,12 @@ export default function ContatosPage() {
         id: "instagram",
         platform: "Instagram",
         url: "https://instagram.com/gangboyz",
+        isActive: true
+      },
+      {
+        id: "whatsapp",
+        platform: "WhatsApp",
+        url: "https://wa.me/5511999999999",
         isActive: true
       }
     ]
@@ -122,23 +140,35 @@ export default function ContatosPage() {
           {contacts.map((contact) => (
             <Card key={contact.id} className="p-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <Instagram className="h-6 w-6 text-white" />
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                  contact.id === 'instagram' 
+                    ? 'bg-gradient-to-r from-pink-500 to-purple-600' 
+                    : 'bg-gradient-to-r from-green-500 to-green-600'
+                }`}>
+                  {contact.id === 'instagram' ? (
+                    <Instagram className="h-6 w-6 text-white" />
+                  ) : (
+                    <MessageCircle className="h-6 w-6 text-white" />
+                  )}
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">{contact.platform}</h3>
-                  <p className="text-gray-600">Link do perfil oficial</p>
+                  <p className="text-gray-600">
+                    {contact.id === 'instagram' ? 'Link do perfil oficial' : 'Link para conversa direta'}
+                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor={`url-${contact.id}`}>URL do Perfil</Label>
+                  <Label htmlFor={`url-${contact.id}`}>
+                    {contact.id === 'instagram' ? 'URL do Perfil' : 'Link do WhatsApp'}
+                  </Label>
                   <Input
                     id={`url-${contact.id}`}
                     value={contact.url}
                     onChange={(e) => updateContact(contact.id, 'url', e.target.value)}
-                    placeholder="https://instagram.com/seuperfil"
+                    placeholder={contact.id === 'instagram' ? "https://instagram.com/seuperfil" : "https://wa.me/5511999999999"}
                     className="mt-1"
                   />
                 </div>
@@ -163,10 +193,17 @@ export default function ContatosPage() {
         <div className="mt-8">
           <Card className="p-6 bg-blue-50">
             <h3 className="text-lg font-semibold text-blue-900 mb-2">Informações</h3>
-            <p className="text-blue-800">
-              Os links configurados aqui aparecerão no footer do site. 
-              Ao clicar no ícone do Instagram, o usuário será direcionado para o link configurado.
-            </p>
+            <div className="text-blue-800 space-y-2">
+              <p>
+                <strong>Instagram:</strong> O link aparecerá no footer do site. Ao clicar no ícone, o usuário será direcionado para o perfil.
+              </p>
+              <p>
+                <strong>WhatsApp:</strong> O link aparecerá como botão flutuante na homepage. Ao clicar, abrirá uma conversa direta no WhatsApp.
+              </p>
+              <p className="text-sm text-blue-700 mt-3">
+                💡 <strong>Dica:</strong> Para WhatsApp, use o formato: https://wa.me/5511999999999 (substitua pelos números reais)
+              </p>
+            </div>
           </Card>
         </div>
       </div>

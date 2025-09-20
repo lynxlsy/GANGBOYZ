@@ -88,7 +88,7 @@ export default function RecomendacoesPage() {
         description: "Jaqueta oversized com design exclusivo",
         price: 299.90,
         originalPrice: 399.90,
-        image: "/black-oversized-streetwear-jacket.jpg",
+        image: "/placeholder-default.svg",
         category: "Jaquetas",
         isActive: true
       },
@@ -161,7 +161,7 @@ export default function RecomendacoesPage() {
   const availableImages = [
     "/black-t-shirt-with-neon-graphic-design.jpg",
     "/black-streetwear-hoodie-with-white-logo.jpg", 
-    "/black-oversized-streetwear-jacket.jpg",
+    "/placeholder-default.svg",
     "/black-cargo-streetwear.png",
     "/black-snapback-cap-with-white-embroidery.jpg",
     "/silver-chain-necklace-streetwear-accessory.jpg",

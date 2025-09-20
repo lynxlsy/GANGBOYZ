@@ -80,36 +80,70 @@ export async function updateBanner(id: string, payload: BannerUpdatePayload): Pr
   return response.json()
 }
 
-// BroadcastChannel para sincronização em tempo real
+// BroadcastChannel para sincronização em tempo real - versão simplificada
 export class BannerBroadcastChannel {
-  private channel: BroadcastChannel
+  private channel: BroadcastChannel | null = null
 
   constructor() {
-    this.channel = new BroadcastChannel('banner:updated')
+    // Verificar se estamos no browser e BroadcastChannel está disponível
+    if (typeof window !== 'undefined' && typeof BroadcastChannel !== 'undefined') {
+      try {
+        this.channel = new BroadcastChannel('banner:updated')
+      } catch (error) {
+        console.warn('BroadcastChannel não disponível:', error)
+        this.channel = null
+      }
+    } else {
+      console.warn('BroadcastChannel não suportado neste ambiente')
+      this.channel = null
+    }
   }
 
   // Enviar notificação de atualização
   broadcast(id: string, version: number) {
-    this.channel.postMessage({ id, version })
+    if (this.channel) {
+      try {
+        this.channel.postMessage({ id, version })
+      } catch (error) {
+        console.warn('Erro ao enviar mensagem:', error)
+      }
+    }
   }
 
   // Escutar atualizações
   onUpdate(callback: (id: string, version: number) => void) {
+    if (!this.channel) {
+      // Retornar função vazia se não há channel
+      return () => {}
+    }
+
     const handleMessage = (event: MessageEvent) => {
-      const { id, version } = event.data
-      callback(id, version)
+      try {
+        const { id, version } = event.data
+        callback(id, version)
+      } catch (error) {
+        console.warn('Erro ao processar mensagem:', error)
+      }
     }
 
     this.channel.addEventListener('message', handleMessage)
 
     // Retornar função de cleanup
     return () => {
-      this.channel.removeEventListener('message', handleMessage)
+      if (this.channel) {
+        this.channel.removeEventListener('message', handleMessage)
+      }
     }
   }
 
   // Fechar canal
   close() {
-    this.channel.close()
+    if (this.channel) {
+      try {
+        this.channel.close()
+      } catch (error) {
+        console.warn('Erro ao fechar canal:', error)
+      }
+    }
   }
 }

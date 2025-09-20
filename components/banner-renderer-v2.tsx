@@ -181,7 +181,7 @@ export function BannerRendererV2({
         onError={(e) => {
           console.error(`Erro ao carregar imagem: ${imageSrc}`)
           // Fallback para placeholder se a imagem falhar
-          e.currentTarget.src = "/placeholder.jpg"
+          e.currentTarget.src = "/placeholder-default.svg"
         }}
       />
       

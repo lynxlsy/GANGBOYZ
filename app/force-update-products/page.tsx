@@ -27,7 +27,7 @@ export default function ForceUpdateProductsPage() {
           description: "Jaqueta streetwear com design exclusivo e tecido premium",
           price: 299.90,
           originalPrice: 399.90,
-          image: "/black-oversized-streetwear-jacket.jpg",
+          image: "/placeholder-default.svg",
           category: "Jaquetas",
           isActive: true
         },
@@ -91,7 +91,7 @@ export default function ForceUpdateProductsPage() {
           description: "Jaqueta + Calça + Camiseta",
           price: 499.90,
           originalPrice: 699.90,
-          image: "/black-oversized-streetwear-jacket.jpg",
+          image: "/placeholder-default.svg",
           isNew: true,
           isPromotion: true,
           installments: "12x de R$ 41,66",
@@ -147,7 +147,7 @@ export default function ForceUpdateProductsPage() {
               name: "Jaqueta Bomber Premium",
               price: 349.90,
               originalPrice: 449.90,
-              image: "/black-oversized-streetwear-jacket.jpg",
+              image: "/placeholder-default.svg",
               isNew: true,
               isPromotion: true,
               installments: "10x de R$ 34,99",
@@ -158,7 +158,7 @@ export default function ForceUpdateProductsPage() {
               name: "Jaqueta Oversized Street",
               price: 299.90,
               originalPrice: 399.90,
-              image: "/black-oversized-streetwear-jacket.jpg",
+              image: "/placeholder-default.svg",
               isNew: false,
               isPromotion: true,
               installments: "8x de R$ 37,49",
@@ -364,6 +364,10 @@ export default function ForceUpdateProductsPage() {
     </div>
   )
 }
+
+
+
+
 
 
 

@@ -1,0 +1,467 @@
+"use client"
+
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { CheckCircle, Upload, Image, Package, Tag, Zap } from "lucide-react"
+
+export default function InitDemoSitePage() {
+  const [isInitializing, setIsInitializing] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  const initDemoSite = () => {
+    setIsInitializing(true)
+    
+    // Simular delay para mostrar o loading
+    setTimeout(() => {
+      // Produtos de demonstração para ofertas especiais
+      const demoStandaloneProducts = [
+        {
+          id: "OFERTA001",
+          name: "Camiseta Oversized Gang",
+          price: 89.90,
+          originalPrice: 129.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 29.97",
+          brand: "Gang Boyz"
+        },
+        {
+          id: "OFERTA002", 
+          name: "Moletom Premium",
+          price: 199.90,
+          originalPrice: 279.90,
+          image: "/placeholder-default.svg",
+          isNew: false,
+          isPromotion: true,
+          installments: "6x de R$ 33.32",
+          brand: "Gang Boyz"
+        },
+        {
+          id: "OFERTA003",
+          name: "Calça Cargo Street",
+          price: 179.90,
+          originalPrice: 229.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "5x de R$ 35.98",
+          brand: "Gang Boyz"
+        },
+        {
+          id: "OFERTA004",
+          name: "Boné Snapback",
+          price: 79.90,
+          originalPrice: 99.90,
+          image: "/placeholder-default.svg",
+          isNew: false,
+          isPromotion: true,
+          installments: "2x de R$ 39.95",
+          brand: "Gang Boyz"
+        }
+      ]
+
+      // Categorias de demonstração
+      const demoCategories = [
+        {
+          id: "MOLETONS",
+          name: "MOLETONS",
+          icon: "/placeholder-logo.svg",
+          products: [
+            {
+              id: "MOL001",
+              name: "Moletom Hoodie Gang",
+              price: 199.90,
+              originalPrice: 249.90,
+              image: "/placeholder-default.svg",
+              isNew: true,
+              isPromotion: true,
+              installments: "6x de R$ 33.32",
+              brand: "Gang Boyz"
+            },
+            {
+              id: "MOL002",
+              name: "Moletom Básico",
+              price: 149.90,
+              originalPrice: 199.90,
+              image: "/placeholder-default.svg",
+              isNew: false,
+              isPromotion: true,
+              installments: "5x de R$ 29.98",
+              brand: "Gang Boyz"
+            },
+            {
+              id: "MOL003",
+              name: "Moletom Premium",
+              price: 279.90,
+              originalPrice: 349.90,
+              image: "/placeholder-default.svg",
+              isNew: true,
+              isPromotion: true,
+              installments: "8x de R$ 34.99",
+              brand: "Gang Boyz"
+            },
+            {
+              id: "MOL004",
+              name: "Moletom Oversized",
+              price: 229.90,
+              originalPrice: 299.90,
+              image: "/placeholder-default.svg",
+              isNew: false,
+              isPromotion: true,
+              installments: "7x de R$ 32.84",
+              brand: "Gang Boyz"
+            }
+          ]
+        },
+        {
+          id: "CAMISETAS",
+          name: "CAMISETAS",
+          icon: "/placeholder-logo.svg",
+          products: [
+            {
+              id: "CAM001",
+              name: "Camiseta Básica Gang",
+              price: 69.90,
+              originalPrice: 99.90,
+              image: "/placeholder-default.svg",
+              isNew: true,
+              isPromotion: true,
+              installments: "2x de R$ 34.95",
+              brand: "Gang Boyz"
+            },
+            {
+              id: "CAM002",
+              name: "Camiseta Oversized",
+              price: 89.90,
+              originalPrice: 129.90,
+              image: "/placeholder-default.svg",
+              isNew: false,
+              isPromotion: true,
+              installments: "3x de R$ 29.97",
+              brand: "Gang Boyz"
+            },
+            {
+              id: "CAM003",
+              name: "Camiseta Manga Longa",
+              price: 99.90,
+              originalPrice: 139.90,
+              image: "/placeholder-default.svg",
+              isNew: true,
+              isPromotion: true,
+              installments: "3x de R$ 33.30",
+              brand: "Gang Boyz"
+            },
+            {
+              id: "CAM004",
+              name: "Camiseta Estampada",
+              price: 79.90,
+              originalPrice: 119.90,
+              image: "/placeholder-default.svg",
+              isNew: false,
+              isPromotion: true,
+              installments: "2x de R$ 39.95",
+              brand: "Gang Boyz"
+            }
+          ]
+        },
+        {
+          id: "CALCAS",
+          name: "CALÇAS",
+          icon: "/placeholder-logo.svg",
+          products: [
+            {
+              id: "CAL001",
+              name: "Calça Cargo Street",
+              price: 179.90,
+              originalPrice: 229.90,
+              image: "/placeholder-default.svg",
+              isNew: true,
+              isPromotion: true,
+              installments: "5x de R$ 35.98",
+              brand: "Gang Boyz"
+            },
+            {
+              id: "CAL002",
+              name: "Calça Jeans Oversized",
+              price: 199.90,
+              originalPrice: 279.90,
+              image: "/placeholder-default.svg",
+              isNew: false,
+              isPromotion: true,
+              installments: "6x de R$ 33.32",
+              brand: "Gang Boyz"
+            },
+            {
+              id: "CAL003",
+              name: "Calça Básica",
+              price: 149.90,
+              originalPrice: 199.90,
+              image: "/placeholder-default.svg",
+              isNew: true,
+              isPromotion: true,
+              installments: "4x de R$ 37.48",
+              brand: "Gang Boyz"
+            },
+            {
+              id: "CAL004",
+              name: "Calça Jogger",
+              price: 159.90,
+              originalPrice: 219.90,
+              image: "/placeholder-default.svg",
+              isNew: false,
+              isPromotion: true,
+              installments: "5x de R$ 31.98",
+              brand: "Gang Boyz"
+            }
+          ]
+        }
+      ]
+
+      // Produtos HOT de demonstração
+      const demoHotProducts = [
+        {
+          id: "HOT001",
+          name: "Jaqueta Oversized Premium",
+          description: "Jaqueta streetwear com design exclusivo e tecido premium",
+          price: 299.90,
+          originalPrice: 399.90,
+          image: "/placeholder-default.svg",
+          category: "Jaquetas",
+          isActive: true
+        },
+        {
+          id: "HOT002", 
+          name: "Moletom Hoodie Gang",
+          description: "Moletom com logo bordado e capuz ajustável",
+          price: 199.90,
+          originalPrice: 249.90,
+          image: "/placeholder-default.svg",
+          category: "Moletons",
+          isActive: true
+        },
+        {
+          id: "HOT003",
+          name: "Camiseta Oversized",
+          description: "Camiseta confortável com design urbano",
+          price: 89.90,
+          originalPrice: 129.90,
+          image: "/placeholder-default.svg",
+          category: "Camisetas",
+          isActive: true
+        },
+        {
+          id: "HOT004",
+          name: "Calça Cargo Street",
+          description: "Calça cargo com bolsos funcionais",
+          price: 179.90,
+          originalPrice: 229.90,
+          image: "/placeholder-default.svg",
+          category: "Calças",
+          isActive: true
+        }
+      ]
+
+      // Banners de demonstração
+      const demoBanners = [
+        {
+          id: "hero-banner-1",
+          name: "Banner Principal 1 (Hero)",
+          description: "Primeiro banner do carrossel principal da página inicial",
+          currentImage: "/placeholder-default.svg",
+          mediaType: "image",
+          dimensions: "1920x1080px (16:9) - Considerando faixa de aviso de 38px",
+          format: "JPG, PNG, WebP, MP4, GIF",
+          position: "Background da seção hero (abaixo da faixa de aviso)"
+        },
+        {
+          id: "hero-banner-2",
+          name: "Banner Principal 2 (Hero)",
+          description: "Segundo banner do carrossel principal da página inicial",
+          currentImage: "/placeholder-default.svg",
+          mediaType: "image",
+          dimensions: "1920x1080px (16:9) - Considerando faixa de aviso de 38px",
+          format: "JPG, PNG, WebP, MP4, GIF",
+          position: "Background da seção hero (abaixo da faixa de aviso)"
+        },
+        {
+          id: "hot-banner",
+          name: "Banner HOT",
+          description: "Banner da seção HOT, exibido acima dos produtos mais vendidos",
+          currentImage: "/placeholder-default.svg",
+          mediaType: "image",
+          dimensions: "1920x650px (≈2.95:1) - Otimizado para seção HOT",
+          format: "JPG, PNG, WebP, MP4, GIF",
+          position: "Seção HOT (abaixo do header)"
+        },
+        {
+          id: "footer-banner",
+          name: "Banner Footer",
+          description: "Banner que aparece antes do footer em todas as páginas",
+          currentImage: "/placeholder-default.svg",
+          mediaType: "image",
+          dimensions: "1920x650px (≈2.95:1) - Padrão para banners de seção",
+          format: "JPG, PNG, WebP, MP4, GIF",
+          position: "Antes do Footer (em todas as páginas)"
+        }
+      ]
+
+      // Salvar no localStorage
+      localStorage.setItem("gang-boyz-standalone-products", JSON.stringify(demoStandaloneProducts))
+      localStorage.setItem("gang-boyz-categories", JSON.stringify(demoCategories))
+      localStorage.setItem("gang-boyz-hot-products", JSON.stringify(demoHotProducts))
+      localStorage.setItem("gang-boyz-homepage-banners", JSON.stringify(demoBanners))
+
+      setIsInitializing(false)
+      setIsInitialized(true)
+    }, 2000)
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            🚀 Inicializar Site de Demonstração
+          </h1>
+          <p className="text-gray-600">
+            Configure o site com dados de demonstração completos para visualização
+          </p>
+        </div>
+
+        {!isInitialized ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Upload className="h-5 w-5" />
+                Dados de Demonstração
+              </CardTitle>
+              <CardDescription>
+                Este processo irá popular o site com produtos, categorias, banners e imagens de demonstração
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
+                  <Package className="h-8 w-8 text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold text-blue-900">Produtos</h3>
+                    <p className="text-sm text-blue-700">4 ofertas especiais + 12 produtos por categoria</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
+                  <Tag className="h-8 w-8 text-green-600" />
+                  <div>
+                    <h3 className="font-semibold text-green-900">Categorias</h3>
+                    <p className="text-sm text-green-700">MOLETONS, CAMISETAS, CALÇAS</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-lg">
+                  <Zap className="h-8 w-8 text-purple-600" />
+                  <div>
+                    <h3 className="font-semibold text-purple-900">Produtos HOT</h3>
+                    <p className="text-sm text-purple-700">4 produtos em destaque</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3 p-4 bg-orange-50 rounded-lg">
+                  <Image className="h-8 w-8 text-orange-600" />
+                  <div>
+                    <h3 className="font-semibold text-orange-900">Banners</h3>
+                    <p className="text-sm text-orange-700">Hero + HOT + Footer</p>
+                  </div>
+                </div>
+              </div>
+
+              <Alert>
+                <AlertDescription>
+                  <strong>Imagens de Demonstração:</strong> Todas as imagens serão substituídas por placeholders 
+                  com texto "ADICIONE SUA IMAGEM AQUI" em diferentes proporções para cada seção.
+                </AlertDescription>
+              </Alert>
+
+              <Button 
+                onClick={initDemoSite}
+                disabled={isInitializing}
+                className="w-full"
+                size="lg"
+              >
+                {isInitializing ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Inicializando...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Inicializar Site de Demonstração
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-600">
+                <CheckCircle className="h-5 w-5" />
+                Site Inicializado com Sucesso!
+              </CardTitle>
+              <CardDescription>
+                O site foi configurado com dados de demonstração completos
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert>
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>✅ Dados carregados:</strong> Produtos, categorias, banners e imagens de demonstração
+                </AlertDescription>
+              </Alert>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-green-50 rounded-lg">
+                  <h3 className="font-semibold text-green-900 mb-2">O que foi configurado:</h3>
+                  <ul className="text-sm text-green-700 space-y-1">
+                    <li>• 4 produtos em ofertas especiais</li>
+                    <li>• 3 categorias com 4 produtos cada</li>
+                    <li>• 4 produtos em destaque (HOT)</li>
+                    <li>• 4 banners (2 hero + 1 hot + 1 footer)</li>
+                    <li>• Imagens de demonstração específicas</li>
+                  </ul>
+                </div>
+                
+                <div className="p-4 bg-blue-50 rounded-lg">
+                  <h3 className="font-semibold text-blue-900 mb-2">Próximos passos:</h3>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• Acesse a página inicial para visualizar</li>
+                    <li>• Use o admin para editar produtos</li>
+                    <li>• Configure banners personalizados</li>
+                    <li>• Adicione suas próprias imagens</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Button asChild className="flex-1">
+                  <a href="/" target="_blank">
+                    Ver Site
+                  </a>
+                </Button>
+                <Button asChild variant="outline" className="flex-1">
+                  <a href="/admin">
+                    Ir para Admin
+                  </a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
+  )
+}

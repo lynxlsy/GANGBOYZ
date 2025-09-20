@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Heart, ShoppingBag } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useCart } from "@/lib/cart-context"
+import { StandardProductCard } from "@/components/standard-product-card"
 
 interface Product {
   id: string
@@ -25,10 +26,22 @@ interface Category {
   products: Product[]
 }
 
+interface HotProduct {
+  id: string
+  name: string
+  description: string
+  price: number
+  originalPrice: number
+  image: string
+  category: string
+  isActive: boolean
+}
+
 export function FeaturedProducts() {
   const [likedProducts, setLikedProducts] = useState<number[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [standaloneProducts, setStandaloneProducts] = useState<Product[]>([])
+  const [hotProducts, setHotProducts] = useState<HotProduct[]>([])
   const { addItem, openCart } = useCart()
 
   // Carregar dados do localStorage
@@ -41,6 +54,148 @@ export function FeaturedProducts() {
     const savedStandaloneProducts = localStorage.getItem("gang-boyz-standalone-products")
     if (savedStandaloneProducts) {
       setStandaloneProducts(JSON.parse(savedStandaloneProducts))
+    } else {
+      // Produtos padrão para preencher as linhas
+      const defaultProducts: Product[] = [
+        {
+          id: "OF001",
+          name: "Camiseta Oversized",
+          price: 89.90,
+          originalPrice: 129.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 29.97",
+          brand: "Gang BoyZ"
+        },
+        {
+          id: "OF002",
+          name: "Moletom Hoodie",
+          price: 199.90,
+          originalPrice: 279.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 66.63",
+          brand: "Gang BoyZ"
+        },
+        {
+          id: "OF003",
+          name: "Calça Cargo Street",
+          price: 179.90,
+          originalPrice: 229.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 59.97",
+          brand: "Gang BoyZ"
+        },
+        {
+          id: "OF004",
+          name: "Boné Snapback Gang",
+          price: 79.90,
+          originalPrice: 99.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 26.63",
+          brand: "Gang BoyZ"
+        },
+        {
+          id: "OF005",
+          name: "Colar de Corrente Prata",
+          price: 59.90,
+          originalPrice: 79.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 19.97",
+          brand: "Gang BoyZ"
+        },
+        {
+          id: "OF006",
+          name: "Jaqueta Bomber",
+          price: 299.90,
+          originalPrice: 399.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 99.97",
+          brand: "Gang BoyZ"
+        },
+        {
+          id: "OF007",
+          name: "Short Esportivo",
+          price: 69.90,
+          originalPrice: 89.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 23.30",
+          brand: "Gang BoyZ"
+        },
+        {
+          id: "OF008",
+          name: "Tênis Streetwear",
+          price: 249.90,
+          originalPrice: 329.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 83.30",
+          brand: "Gang BoyZ"
+        },
+        {
+          id: "OF009",
+          name: "Regata Premium",
+          price: 49.90,
+          originalPrice: 69.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 16.63",
+          brand: "Gang BoyZ"
+        },
+        {
+          id: "OF010",
+          name: "Calça Jeans Skinny",
+          price: 159.90,
+          originalPrice: 199.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 53.30",
+          brand: "Gang BoyZ"
+        },
+        {
+          id: "OF011",
+          name: "Blusa de Frio",
+          price: 129.90,
+          originalPrice: 179.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 43.30",
+          brand: "Gang BoyZ"
+        },
+        {
+          id: "OF012",
+          name: "Cinto de Couro",
+          price: 89.90,
+          originalPrice: 119.90,
+          image: "/placeholder-default.svg",
+          isNew: true,
+          isPromotion: true,
+          installments: "3x de R$ 29.97",
+          brand: "Gang BoyZ"
+        }
+      ]
+      setStandaloneProducts(defaultProducts)
+    }
+
+    const savedHotProducts = localStorage.getItem("gang-boyz-hot-products")
+    if (savedHotProducts) {
+      setHotProducts(JSON.parse(savedHotProducts))
     }
   }, [])
 
@@ -55,7 +210,7 @@ export function FeaturedProducts() {
       id: Number(product.id),
       name: product.name,
       price: product.price,
-      image: product.image || "/placeholder.svg",
+      image: product.image || "/placeholder-default.svg",
     })
     openCart()
   }
@@ -64,319 +219,70 @@ export function FeaturedProducts() {
   return (
     <section className="py-8 bg-black">
       <div className="container mx-auto px-4">
+        {/* Banner acima do título */}
+        <div className="text-center mb-8">
+          <div className="mx-auto max-w-full">
+            <img
+              src="/banner-ofertas-especiais.svg"
+              alt="Banner de Ofertas - Gang Boyz"
+              className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+              style={{ aspectRatio: '1200/600' }}
+              onError={(e) => {
+                // Fallback para banner com gradiente se a imagem não carregar
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const fallbackDiv = document.createElement('div');
+                fallbackDiv.className = 'bg-gradient-to-r from-red-600 to-red-800 rounded-lg p-6 md:p-8 mx-auto max-w-4xl';
+                fallbackDiv.innerHTML = `
+                  <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">🎯 PROMOÇÕES IMPERDÍVEIS</h2>
+                  <p class="text-white/90 text-lg md:text-xl">Aproveite nossas ofertas especiais com até 50% de desconto!</p>
+                `;
+                target.parentNode?.insertBefore(fallbackDiv, target);
+              }}
+            />
+          </div>
+        </div>
+
         {/* Título Principal */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            OFERTAS ESPECIAIS
+            OFERTAS
           </h1>
           <div className="w-32 h-1 red-bg mx-auto rounded"></div>
         </div>
 
-        {/* Produtos Avulsos integrados na seção OFERTAS ESPECIAIS */}
+        {/* Produtos Avulsos integrados na seção OFERTAS */}
         {standaloneProducts.length > 0 && (
           <div className="mb-16">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-6 gap-3 md:gap-4">
               {standaloneProducts.map((product) => (
-                <div key={product.id} className="w-4/5">
-                  <img
-                    src={product.image || "/placeholder.svg"}
-                    alt={product.name}
-                    className="w-full h-96 object-cover cursor-pointer"
-                    onClick={() => handleAddToCart(product)}
-                  />
-                  <div className="mt-2 text-white">
-                    <h3 className="font-semibold text-lg">{product.name}</h3>
-                    <div className="text-red-500 font-bold text-xl">R$ {product.price.toFixed(2)}</div>
-                    <div className="text-gray-400 text-sm">ID: {product.id}</div>
-                  </div>
-                </div>
+                <StandardProductCard
+                  key={product.id}
+                  product={product}
+                  onClick={() => handleAddToCart(product)}
+                />
               ))}
             </div>
           </div>
         )}
 
-        {/* Seção de Categorias */}
+        {/* Produtos das Categorias integrados na seção OFERTAS */}
         {categories.length > 0 && (
-          <div className="space-y-16">
-            {categories.map((category) => (
-            <div key={category.id} className="mb-16">
-              {/* Título da Categoria */}
-              <div className="text-left mb-8">
-                <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-3xl md:text-4xl font-bold text-white">
-                    {category.name.toUpperCase()}
-                  </h2>
-                  {category.icon && (
-                    <img
-                      src={category.icon}
-                      alt={`Ícone de ${category.name}`}
-                      className="h-8 w-8 object-contain"
-                    />
-                  )}
-                </div>
-                <div className="w-24 h-1 red-bg rounded"></div>
-              </div>
-
-              {/* Grid de Produtos da Categoria */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {category.products.map((product) => (
-                    <div key={product.id} className="w-4/5">
-                      <img
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        className="w-full h-96 object-cover cursor-pointer"
-                        onClick={() => handleAddToCart(product)}
-                      />
-                      <div className="mt-2 text-white">
-                        <h3 className="font-semibold text-lg">{product.name}</h3>
-                        <div className="text-red-500 font-bold text-xl">R$ {product.price.toFixed(2)}</div>
-                        <div className="text-gray-400 text-sm">ID: {product.id}</div>
-                      </div>
-                    </div>
-                ))}
-              </div>
-            </div>
-            ))}
-          </div>
-        )}
-
-        {/* Mensagem quando não há produtos */}
-        {categories.length === 0 && standaloneProducts.length === 0 && (
-          <div className="text-center py-16">
-            <h2 className="text-2xl font-bold text-white mb-4">Nenhum produto disponível</h2>
-            <p className="text-neutral-400 mb-8">Os produtos serão exibidos aqui quando forem criados no admin.</p>
-            <div className="flex gap-4 justify-center">
-              <Button
-                variant="outline"
-                className="red-border-dynamic red-text red-bg-hover hover:text-white"
-                onClick={() => window.open('/admin', '_blank')}
-              >
-                Acessar Admin
-              </Button>
-              <Button
-                className="bg-green-600 hover:bg-green-700 text-white"
-                onClick={() => {
-                  // Produtos HOT demonstrativos
-                  const demoHotProducts = [
-                    {
-                      id: "HOT001",
-                      name: "Jaqueta Oversized Premium",
-                      description: "Jaqueta streetwear com design exclusivo e tecido premium",
-                      price: 299.90,
-                      originalPrice: 399.90,
-                      image: "/black-oversized-streetwear-jacket.jpg",
-                      category: "Jaquetas",
-                      isActive: true
-                    },
-                    {
-                      id: "HOT002", 
-                      name: "Moletom Hoodie Gang",
-                      description: "Moletom com logo bordado e capuz ajustável",
-                      price: 199.90,
-                      originalPrice: 249.90,
-                      image: "/black-streetwear-hoodie-with-white-logo.jpg",
-                      category: "Moletons",
-                      isActive: true
-                    },
-                    {
-                      id: "HOT003",
-                      name: "Camiseta Graphic Design",
-                      description: "Camiseta com estampa neon e design urbano",
-                      price: 89.90,
-                      originalPrice: 129.90,
-                      image: "/black-t-shirt-with-neon-graphic-design.jpg",
-                      category: "Camisetas",
-                      isActive: true
-                    },
-                    {
-                      id: "HOT004",
-                      name: "Calça Cargo Street",
-                      description: "Calça cargo com bolsos laterais e corte moderno",
-                      price: 179.90,
-                      originalPrice: 229.90,
-                      image: "/black-cargo-streetwear.png",
-                      category: "Calças",
-                      isActive: true
-                    },
-                    {
-                      id: "HOT005",
-                      name: "Boné Snapback Gang",
-                      description: "Boné ajustável com logo bordado em branco",
-                      price: 79.90,
-                      originalPrice: 99.90,
-                      image: "/black-snapback-cap-with-white-embroidery.jpg",
-                      category: "Acessórios",
-                      isActive: true
-                    },
-                    {
-                      id: "HOT006",
-                      name: "Colar de Corrente Prata",
-                      description: "Colar de corrente prata com design minimalista",
-                      price: 149.90,
-                      originalPrice: 199.90,
-                      image: "/silver-chain-necklace-streetwear-accessory.jpg",
-                      category: "Acessórios",
-                      isActive: true
-                    }
-                  ]
-
-                  // Produtos para OFERTAS ESPECIAIS
-                  const demoStandaloneProducts = [
-                    {
-                      id: "OFFER001",
-                      name: "Kit Completo Streetwear",
-                      description: "Jaqueta + Calça + Camiseta",
-                      price: 499.90,
-                      originalPrice: 699.90,
-                      image: "/black-oversized-streetwear-jacket.jpg",
-                      isNew: true,
-                      isPromotion: true,
-                      installments: "12x de R$ 41,66",
-                      brand: "Gang Boyz"
-                    },
-                    {
-                      id: "OFFER002",
-                      name: "Moletom Premium Collection",
-                      description: "Moletom com acabamento premium",
-                      price: 229.90,
-                      originalPrice: 299.90,
-                      image: "/black-streetwear-hoodie-with-white-logo.jpg",
-                      isNew: false,
-                      isPromotion: true,
-                      installments: "6x de R$ 38,32",
-                      brand: "Gang Boyz"
-                    },
-                    {
-                      id: "OFFER003",
-                      name: "Camiseta Limited Edition",
-                      description: "Edição limitada com design exclusivo",
-                      price: 119.90,
-                      originalPrice: 159.90,
-                      image: "/black-t-shirt-with-neon-graphic-design.jpg",
-                      isNew: true,
-                      isPromotion: false,
-                      installments: "3x de R$ 39,97",
-                      brand: "Gang Boyz"
-                    },
-                    {
-                      id: "OFFER004",
-                      name: "Calça Cargo Tactical",
-                      description: "Calça cargo com tecnologia tática",
-                      price: 199.90,
-                      originalPrice: 279.90,
-                      image: "/black-cargo-streetwear.png",
-                      isNew: false,
-                      isPromotion: true,
-                      installments: "8x de R$ 24,99",
-                      brand: "Gang Boyz"
-                    }
-                  ]
-
-                  // Categorias com produtos
-                  const demoCategories = [
-                    {
-                      id: "cat001",
-                      name: "Jaquetas",
-                      icon: "🧥",
-                      products: [
-                        {
-                          id: "JACKET001",
-                          name: "Jaqueta Bomber Premium",
-                          price: 349.90,
-                          originalPrice: 449.90,
-                          image: "/black-oversized-streetwear-jacket.jpg",
-                          isNew: true,
-                          isPromotion: true,
-                          installments: "10x de R$ 34,99",
-                          brand: "Gang Boyz"
-                        },
-                        {
-                          id: "JACKET002",
-                          name: "Jaqueta Oversized Street",
-                          price: 299.90,
-                          originalPrice: 399.90,
-                          image: "/black-oversized-streetwear-jacket.jpg",
-                          isNew: false,
-                          isPromotion: true,
-                          installments: "8x de R$ 37,49",
-                          brand: "Gang Boyz"
-                        }
-                      ]
-                    },
-                    {
-                      id: "cat002",
-                      name: "Moletons",
-                      icon: "👕",
-                      products: [
-                        {
-                          id: "HOODIE001",
-                          name: "Moletom Hoodie Gang",
-                          price: 199.90,
-                          originalPrice: 249.90,
-                          image: "/black-streetwear-hoodie-with-white-logo.jpg",
-                          isNew: true,
-                          isPromotion: true,
-                          installments: "6x de R$ 33,32",
-                          brand: "Gang Boyz"
-                        }
-                      ]
-                    },
-                    {
-                      id: "cat003",
-                      name: "Camisetas",
-                      icon: "👔",
-                      products: [
-                        {
-                          id: "TSHIRT001",
-                          name: "Camiseta Graphic Neon",
-                          price: 89.90,
-                          originalPrice: 129.90,
-                          image: "/black-t-shirt-with-neon-graphic-design.jpg",
-                          isNew: true,
-                          isPromotion: true,
-                          installments: "3x de R$ 29,97",
-                          brand: "Gang Boyz"
-                        }
-                      ]
-                    },
-                    {
-                      id: "cat004",
-                      name: "Calças",
-                      icon: "👖",
-                      products: [
-                        {
-                          id: "PANTS001",
-                          name: "Calça Cargo Street",
-                          price: 179.90,
-                          originalPrice: 229.90,
-                          image: "/black-cargo-streetwear.png",
-                          isNew: false,
-                          isPromotion: true,
-                          installments: "5x de R$ 35,98",
-                          brand: "Gang Boyz"
-                        }
-                      ]
-                    }
-                  ]
-
-                  // Salvar no localStorage
-                  localStorage.setItem("gang-boyz-hot-products", JSON.stringify(demoHotProducts))
-                  localStorage.setItem("gang-boyz-standalone-products", JSON.stringify(demoStandaloneProducts))
-                  localStorage.setItem("gang-boyz-categories", JSON.stringify(demoCategories))
-                  
-                  // Disparar eventos para atualizar as seções
-                  window.dispatchEvent(new CustomEvent('hotProductsUpdated'))
-                  window.dispatchEvent(new CustomEvent('productsUpdated'))
-                  
-                  // Recarregar a página para mostrar os produtos
-                  window.location.reload()
-                }}
-              >
-                ➕ Adicionar Produtos Demo
-              </Button>
+          <div className="mb-16">
+            <div className="grid grid-cols-6 gap-3 md:gap-4">
+              {categories.map((category) => 
+                category.products.map((product) => (
+                  <StandardProductCard
+                    key={product.id}
+                    product={product}
+                    onClick={() => handleAddToCart(product)}
+                  />
+                ))
+              )}
             </div>
           </div>
         )}
+
       </div>
     </section>
   )

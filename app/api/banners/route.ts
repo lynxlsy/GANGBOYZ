@@ -24,7 +24,7 @@ function initializeDefaultBanners() {
       },
       {
         id: "hot",
-        src: "/black-oversized-streetwear-jacket.jpg",
+        src: "/placeholder-default.svg",
         mime: "image/jpeg",
         naturalWidth: 1920,
         naturalHeight: 1080,

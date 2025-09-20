@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Upload, Eye, Save, RefreshCw, Trash2 } from "lucide-react"
+import { ArrowLeft, Upload, Eye, Save, RefreshCw, Trash2, Settings } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { toast } from "sonner"
@@ -39,6 +39,9 @@ export default function HomepageBannersPage() {
   const [isBannerActive, setIsBannerActive] = useState(true)
   const [bannerEmoji, setBannerEmoji] = useState("")
   const [bannerBgColor, setBannerBgColor] = useState("black")
+  const [bannerHeight, setBannerHeight] = useState(38) // altura em pixels
+  const [bannerSpeed, setBannerSpeed] = useState(50) // velocidade do scroll (1-100)
+  const [bannerRepetitions, setBannerRepetitions] = useState(4) // quantidade de repetições do texto
 
   // Carregar banners do localStorage
   useEffect(() => {
@@ -51,11 +54,17 @@ export default function HomepageBannersPage() {
     const savedActive = localStorage.getItem("gang-boyz-banner-active")
     const savedEmoji = localStorage.getItem("gang-boyz-banner-emoji")
     const savedBgColor = localStorage.getItem("gang-boyz-banner-bg-color")
+    const savedHeight = localStorage.getItem("gang-boyz-banner-height")
+    const savedSpeed = localStorage.getItem("gang-boyz-banner-speed")
+    const savedRepetitions = localStorage.getItem("gang-boyz-banner-repetitions")
     
     if (savedText) setBannerText(savedText)
     if (savedActive !== null) setIsBannerActive(savedActive === 'true')
     if (savedEmoji) setBannerEmoji(savedEmoji)
     if (savedBgColor) setBannerBgColor(savedBgColor)
+    if (savedHeight) setBannerHeight(parseInt(savedHeight))
+    if (savedSpeed) setBannerSpeed(parseInt(savedSpeed))
+    if (savedRepetitions) setBannerRepetitions(parseInt(savedRepetitions))
   }
 
   const loadBanners = () => {
@@ -81,13 +90,13 @@ export default function HomepageBannersPage() {
           
           const heroBanner2: Banner = {
             ...oldHeroBanner,
-            id: "hero-banner-2", 
+            id: "hero-banner-2",
             name: "Banner Principal 2 (Hero)",
             description: "Segundo banner do carrossel principal da página inicial",
-            currentImage: "/black-streetwear-hoodie-with-white-logo.jpg" // Imagem diferente para o segundo
+            currentImage: "/banner-hero-2.svg" // Imagem diferente para o segundo
           }
           
-          // Remover banner antigo e adicionar os novos
+          // Remover banner antigo e adicionar os dois banners
           const otherBanners = banners.filter(banner => banner.id !== "hero-banner")
           const migratedBanners = [heroBanner1, heroBanner2, ...otherBanners]
           
@@ -98,27 +107,7 @@ export default function HomepageBannersPage() {
       }
       
       // Verificar se tem apenas um banner hero e criar o segundo se necessário
-      const heroBanners = banners.filter(banner => banner.id.startsWith("hero-banner"))
-      if (heroBanners.length === 1) {
-        const existingHero = heroBanners[0]
-        const isFirstBanner = existingHero.id === "hero-banner-1"
-        
-        const newHeroBanner: Banner = {
-          id: isFirstBanner ? "hero-banner-2" : "hero-banner-1",
-          name: isFirstBanner ? "Banner Principal 2 (Hero)" : "Banner Principal 1 (Hero)",
-          description: isFirstBanner ? "Segundo banner do carrossel principal da página inicial" : "Primeiro banner do carrossel principal da página inicial",
-          currentImage: isFirstBanner ? "/black-streetwear-hoodie-with-white-logo.jpg" : "/urban-streetwear-model-in-black-hoodie-against-dar.jpg",
-          mediaType: "image",
-          dimensions: "1920x1080px (16:9) - Considerando faixa de aviso de 38px",
-          format: "JPG, PNG, WebP, MP4, GIF",
-          position: "Background da seção hero (abaixo da faixa de aviso)"
-        }
-        
-        const updatedBanners = [...banners, newHeroBanner]
-        setBanners(updatedBanners)
-        localStorage.setItem("gang-boyz-homepage-banners", JSON.stringify(updatedBanners))
-        return
-      }
+      // Apenas carregar banners existentes, sem criar banner 2 automaticamente
       
       setBanners(banners)
     } else {
@@ -128,7 +117,7 @@ export default function HomepageBannersPage() {
           id: "hero-banner-1",
           name: "Banner Principal 1 (Hero)",
           description: "Primeiro banner do carrossel principal da página inicial",
-          currentImage: "/urban-streetwear-model-in-black-hoodie-against-dar.jpg",
+          currentImage: "/banner-hero.svg",
           mediaType: "image",
           dimensions: "1920x1080px (16:9) - Considerando faixa de aviso de 38px",
           format: "JPG, PNG, WebP, MP4, GIF",
@@ -138,7 +127,7 @@ export default function HomepageBannersPage() {
           id: "hero-banner-2",
           name: "Banner Principal 2 (Hero)",
           description: "Segundo banner do carrossel principal da página inicial",
-          currentImage: "/black-streetwear-hoodie-with-white-logo.jpg",
+          currentImage: "/banner-hero.svg",
           mediaType: "image",
           dimensions: "1920x1080px (16:9) - Considerando faixa de aviso de 38px",
           format: "JPG, PNG, WebP, MP4, GIF",
@@ -148,9 +137,9 @@ export default function HomepageBannersPage() {
           id: "hot-banner",
           name: "Banner HOT",
           description: "Banner da seção HOT, exibido acima dos produtos mais vendidos",
-          currentImage: "/black-oversized-streetwear-jacket.jpg",
+          currentImage: "/banner-hero.svg",
           mediaType: "image",
-          dimensions: "1920x650px (≈2.95:1) - Otimizado para seção HOT",
+          dimensions: "1200x400px (3:1) - Otimizado para seção HOT",
           format: "JPG, PNG, WebP, MP4, GIF",
           position: "Seção HOT (abaixo do header)"
         },
@@ -158,11 +147,21 @@ export default function HomepageBannersPage() {
           id: "footer-banner",
           name: "Banner Footer",
           description: "Banner que aparece antes do footer em todas as páginas",
-          currentImage: "/placeholder.jpg",
+          currentImage: "/banner-footer.svg",
           mediaType: "image",
-          dimensions: "1920x650px (≈2.95:1) - Padrão para banners de seção",
+          dimensions: "1200x400px (3:1) - Banner específico para footer",
           format: "JPG, PNG, WebP, MP4, GIF",
           position: "Antes do Footer (em todas as páginas)"
+        },
+        {
+          id: "chefe-banner",
+          name: "Banner Chefe",
+          description: "Banner do chefe/CEO da empresa",
+          currentImage: "/banner-chefe.svg",
+          mediaType: "image",
+          dimensions: "1200x400px (3:1) - Banner específico para chefe",
+          format: "JPG, PNG, WebP, MP4, GIF",
+          position: "Seção do Chefe"
         }
       ]
       setBanners(defaultBanners)
@@ -375,31 +374,31 @@ export default function HomepageBannersPage() {
 
   const resetBanners = () => {
     const defaultBanners: Banner[] = [
-      {
-        id: "hero-banner-1",
-        name: "Banner Principal 1 (Hero)",
-        description: "Primeiro banner do carrossel principal da página inicial",
-        currentImage: "/urban-streetwear-model-in-black-hoodie-against-dar.jpg",
-        mediaType: "image",
-        dimensions: "1920x1080px (16:9) - Considerando faixa de aviso de 38px",
-        format: "JPG, PNG, WebP, MP4, GIF",
-        position: "Background da seção hero (abaixo da faixa de aviso)"
-      },
-      {
-        id: "hero-banner-2",
-        name: "Banner Principal 2 (Hero)",
-        description: "Segundo banner do carrossel principal da página inicial",
-        currentImage: "/black-streetwear-hoodie-with-white-logo.jpg",
-        mediaType: "image",
-        dimensions: "1920x1080px (16:9) - Considerando faixa de aviso de 38px",
-        format: "JPG, PNG, WebP, MP4, GIF",
-        position: "Background da seção hero (abaixo da faixa de aviso)"
-      },
+        {
+          id: "hero-banner-1",
+          name: "Banner Principal 1 (Hero)",
+          description: "Primeiro banner do carrossel principal da página inicial",
+          currentImage: "/banner-hero-1.svg",
+          mediaType: "image",
+          dimensions: "1920x1080px (16:9) - Considerando faixa de aviso de 38px",
+          format: "JPG, PNG, WebP, MP4, GIF",
+          position: "Background da seção hero (abaixo da faixa de aviso)"
+        },
+        {
+          id: "hero-banner-2",
+          name: "Banner Principal 2 (Hero)",
+          description: "Segundo banner do carrossel principal da página inicial",
+          currentImage: "/banner-hero-2.svg",
+          mediaType: "image",
+          dimensions: "1920x1080px (16:9) - Considerando faixa de aviso de 38px",
+          format: "JPG, PNG, WebP, MP4, GIF",
+          position: "Background da seção hero (abaixo da faixa de aviso)"
+        },
       {
         id: "hot-banner",
         name: "Banner HOT",
         description: "Banner da seção HOT, exibido acima dos produtos mais vendidos",
-        currentImage: "/black-oversized-streetwear-jacket.jpg",
+        currentImage: "/placeholder-default.svg",
         mediaType: "image",
         dimensions: "1920x650px (≈2.95:1) - Otimizado para seção HOT",
         format: "JPG, PNG, WebP, MP4, GIF",
@@ -490,16 +489,26 @@ export default function HomepageBannersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 via-transparent to-blue-500/5"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/40"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 md:mb-12 gap-4">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
             <Link href="/admin/banners">
-              <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Voltar aos Banners
-              </Button>
+              <div className="bg-gradient-to-br from-white/10 to-white/20 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 hover:border-red-400/50 hover:bg-white/20 transition-all duration-500">
+                <div className="flex items-center gap-2">
+                  <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-lg p-1.5 shadow-lg shadow-red-500/25">
+                    <ArrowLeft className="h-4 w-4 text-white" />
+                  </div>
+                  <span className="text-white font-medium">Voltar aos Banners</span>
+                </div>
+              </div>
             </Link>
             <div className="flex items-center gap-4">
               <div className="hidden md:block">
@@ -512,26 +521,24 @@ export default function HomepageBannersPage() {
                 />
               </div>
               <div>
-                <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-black bg-gradient-to-r from-white via-red-400 to-blue-400 bg-clip-text text-transparent">
                   Banners da Homepage
                 </h1>
-                <p className="text-gray-400 text-sm md:text-lg">Gerencie os banners da página inicial com suporte a vídeos e GIFs</p>
+                <p className="text-gray-300 text-sm md:text-lg">Gerencie os banners da página inicial com suporte a vídeos e GIFs</p>
               </div>
             </div>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-2 md:gap-3 w-full md:w-auto">
-            <Button 
-              variant="outline" 
+            <button 
               onClick={resetBanners}
               disabled={saving}
-              className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white text-sm"
+              className="bg-gradient-to-br from-white/10 to-white/20 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 hover:border-red-400/50 hover:bg-white/20 transition-all duration-500 text-white text-sm flex items-center"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Resetar
-            </Button>
-            <Button 
-              variant="outline" 
+            </button>
+            <button 
               onClick={() => {
                 const currentBanners = [...banners]
                 const filteredBanners = currentBanners.filter(banner => !banner.id.startsWith("hero-banner"))
@@ -540,7 +547,7 @@ export default function HomepageBannersPage() {
                   id: "hero-banner-1",
                   name: "Banner Principal 1 (Hero)",
                   description: "Primeiro banner do carrossel principal da página inicial",
-                  currentImage: "/urban-streetwear-model-in-black-hoodie-against-dar.jpg",
+                  currentImage: "/banner-hero-1.svg",
                   mediaType: "image",
                   dimensions: "1920x1080px (16:9) - Considerando faixa de aviso de 38px",
                   format: "JPG, PNG, WebP, MP4, GIF",
@@ -551,7 +558,7 @@ export default function HomepageBannersPage() {
                   id: "hero-banner-2",
                   name: "Banner Principal 2 (Hero)",
                   description: "Segundo banner do carrossel principal da página inicial",
-                  currentImage: "/black-streetwear-hoodie-with-white-logo.jpg",
+                  currentImage: "/banner-hero-2.svg",
                   mediaType: "image",
                   dimensions: "1920x1080px (16:9) - Considerando faixa de aviso de 38px",
                   format: "JPG, PNG, WebP, MP4, GIF",
@@ -564,172 +571,335 @@ export default function HomepageBannersPage() {
                 toast.success("Banners Hero criados com sucesso!")
               }}
               disabled={saving}
-              className="border-red-600 text-red-300 hover:bg-red-900 hover:text-white text-sm"
+              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold px-4 py-2 rounded-xl shadow-lg hover:shadow-red-500/25 transition-all duration-300 text-sm flex items-center"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Criar Banners Hero
-            </Button>
-            <Button 
+            </button>
+            <button 
               onClick={saveBanners}
               disabled={saving}
-              className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold text-sm"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-blue-500/25 transition-all duration-300 text-sm flex items-center"
             >
               <Save className="h-4 w-4 mr-2" />
               {saving ? "Salvando..." : "Salvar Alterações"}
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Faixa de Aviso */}
-        <Card className="p-6 mb-8 bg-gradient-to-br from-red-900/20 to-red-800/20 border border-red-700/30">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-2 h-8 bg-red-500 rounded-full"></div>
-            <h2 className="text-xl font-bold text-white">Faixa de Aviso</h2>
+        <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 mb-8 hover:border-red-400/50 hover:bg-white/10 transition-all duration-500 hover:scale-105">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-3 shadow-lg shadow-red-500/25">
+              <div className="w-6 h-6 bg-white rounded-full"></div>
+            </div>
+            <h2 className="text-3xl font-black text-white">Faixa de Aviso Superior</h2>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div>
-              <Label className="font-semibold text-gray-300 mb-2 block">
-                Texto do Aviso
-              </Label>
-              <Input
-                value={bannerText}
-                onChange={(e) => setBannerText(e.target.value)}
-                placeholder="Digite o texto do aviso..."
-                className="bg-gray-700 border-gray-600 text-white"
-              />
-              <p className="text-xs text-gray-400 mt-1">
-                Texto que aparecerá na faixa superior do site
-              </p>
+          {/* Controles Principais */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {/* Texto e Emoji */}
+            <div className="space-y-6">
+              <div>
+                <Label className="font-black text-white mb-3 block text-lg">
+                  📝 Texto do Aviso
+                </Label>
+                <Input
+                  value={bannerText}
+                  onChange={(e) => setBannerText(e.target.value)}
+                  placeholder="Digite o texto do aviso..."
+                  className="bg-white/10 border-white/20 text-white placeholder-gray-400 h-12 text-lg"
+                />
+                <p className="text-sm text-gray-400 mt-2">
+                  Texto que aparecerá na faixa superior do site
+                </p>
+              </div>
+              
+              <div>
+                <Label className="font-black text-white mb-3 block text-lg">
+                  😀 Emoji (opcional)
+                </Label>
+                <div className="flex gap-3">
+                  <Input
+                    value={bannerEmoji}
+                    onChange={(e) => setBannerEmoji(e.target.value)}
+                    placeholder="🔥"
+                    className="bg-white/10 border-white/20 text-white placeholder-gray-400 w-24 h-12 text-xl text-center"
+                  />
+                  <div className="flex gap-2 flex-wrap">
+                    {["🔥", "⭐", "💥", "🚀", "✨", "🎯", "💎", "⚡", "🎉", "💯", "🔥", "🌟"].map((emoji, index) => (
+                      <button
+                        key={`emoji-${index}`}
+                        onClick={() => setBannerEmoji(emoji)}
+                        className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg border border-white/20 hover:border-red-400/50 flex items-center justify-center text-lg transition-all duration-300 hover:scale-110"
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <p className="text-sm text-gray-400 mt-2">
+                  Emoji que aparecerá antes e depois do texto
+                </p>
+              </div>
             </div>
             
-            <div>
-              <Label className="font-semibold text-gray-300 mb-2 block">
-                Emoji (opcional)
-              </Label>
-              <div className="flex gap-2">
-                <Input
-                  value={bannerEmoji}
-                  onChange={(e) => setBannerEmoji(e.target.value)}
-                  placeholder="🔥"
-                  className="bg-gray-700 border-gray-600 text-white w-20"
-                />
-                <div className="flex gap-1">
-                  {["🔥", "⭐", "💥", "🚀", "✨", "🎯", "💎", "⚡"].map((emoji) => (
+            {/* Controles de Aparência */}
+            <div className="space-y-6">
+              <div>
+                <Label className="font-black text-white mb-3 block text-lg">
+                  🎨 Cor de Fundo
+                </Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { name: "Preto", value: "black", class: "bg-black" },
+                    { name: "Vermelho", value: "red", class: "bg-red-600" },
+                    { name: "Sincronizado", value: "sync", class: "bg-gradient-to-r from-red-600 to-blue-600" },
+                    { name: "Azul", value: "blue", class: "bg-blue-600" },
+                    { name: "Amarelo", value: "yellow", class: "bg-yellow-500" },
+                    { name: "Verde", value: "green", class: "bg-green-600" }
+                  ].map((color) => (
                     <button
-                      key={emoji}
-                      onClick={() => setBannerEmoji(emoji)}
-                      className="w-8 h-8 bg-gray-700 hover:bg-gray-600 rounded border border-gray-600 flex items-center justify-center text-sm"
+                      key={color.value}
+                      onClick={() => setBannerBgColor(color.value)}
+                      className={`h-12 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
+                        bannerBgColor === color.value ? 'border-white shadow-lg' : 'border-white/20'
+                      } ${color.class} flex items-center justify-center text-sm text-white font-bold`}
+                      title={color.name}
                     >
-                      {emoji}
+                      {color.name === "Sincronizado" ? "SYNC" : color.name.charAt(0)}
                     </button>
                   ))}
                 </div>
               </div>
-              <p className="text-xs text-gray-400 mt-1">
-                Emoji que aparecerá antes e depois do texto
-              </p>
-            </div>
-            
-            <div>
-              <Label className="font-semibold text-gray-300 mb-2 block">
-                Cor de Fundo
-              </Label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { name: "Preto", value: "black", class: "bg-black" },
-                  { name: "Vermelho", value: "red", class: "bg-red-600" },
-                  { name: "Sincronizado", value: "sync", class: "bg-gradient-to-r from-red-600 to-blue-600" },
-                  { name: "Azul", value: "blue", class: "bg-blue-600" },
-                  { name: "Amarelo", value: "yellow", class: "bg-yellow-500" },
-                  { name: "Verde", value: "green", class: "bg-green-600" }
-                ].map((color) => (
-                  <button
-                    key={color.value}
-                    onClick={() => setBannerBgColor(color.value)}
-                    className={`h-8 rounded border-2 ${
-                      bannerBgColor === color.value ? 'border-white' : 'border-gray-600'
-                    } ${color.class} flex items-center justify-center text-xs text-white font-medium`}
-                    title={color.name}
-                  >
-                    {color.name === "Sincronizado" ? "SYNC" : color.name.charAt(0)}
-                  </button>
-                ))}
+              
+              <div>
+                <Label className="font-black text-white mb-3 block text-lg">
+                  📏 Altura da Faixa
+                </Label>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm text-gray-400 w-12">Baixa</span>
+                    <input
+                      type="range"
+                      min="24"
+                      max="80"
+                      value={bannerHeight}
+                      onChange={(e) => setBannerHeight(parseInt(e.target.value))}
+                      className="flex-1 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+                    />
+                    <span className="text-sm text-gray-400 w-12">Alta</span>
+                  </div>
+                  <div className="text-center">
+                    <span className="bg-white/10 px-3 py-1 rounded-lg text-white font-bold">
+                      {bannerHeight}px
+                    </span>
+                  </div>
+                </div>
               </div>
-              <p className="text-xs text-gray-400 mt-1">
-                Cor de fundo da faixa de aviso
-              </p>
+              
+              <div>
+                <Label className="font-black text-white mb-3 block text-lg">
+                  ⚡ Velocidade do Scroll
+                </Label>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm text-gray-400 w-12">Lenta</span>
+                    <input
+                      type="range"
+                      min="10"
+                      max="100"
+                      value={bannerSpeed}
+                      onChange={(e) => setBannerSpeed(parseInt(e.target.value))}
+                      className="flex-1 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+                    />
+                    <span className="text-sm text-gray-400 w-12">Rápida</span>
+                  </div>
+                  <div className="text-center">
+                    <span className="bg-white/10 px-3 py-1 rounded-lg text-white font-bold">
+                      {bannerSpeed}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Label className="font-black text-white mb-3 block text-lg">
+                  🔄 Repetições do Texto
+                </Label>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm text-gray-400 w-12">Poucas</span>
+                    <input
+                      type="range"
+                      min="2"
+                      max="10"
+                      value={bannerRepetitions}
+                      onChange={(e) => setBannerRepetitions(parseInt(e.target.value))}
+                      className="flex-1 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+                    />
+                    <span className="text-sm text-gray-400 w-12">Muitas</span>
+                  </div>
+                  <div className="text-center">
+                    <span className="bg-white/10 px-3 py-1 rounded-lg text-white font-bold">
+                      {bannerRepetitions} repetições
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           
-          <div className="mt-6 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
+          {/* Controles de Ativação */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center space-x-3">
               <input
                 type="checkbox"
                 id="banner-active"
                 checked={isBannerActive}
                 onChange={(e) => setIsBannerActive(e.target.checked)}
-                className="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500"
+                className="w-5 h-5 text-red-600 bg-white/10 border-white/20 rounded focus:ring-red-500"
               />
-              <Label htmlFor="banner-active" className="text-gray-300 font-medium">
+              <Label htmlFor="banner-active" className="text-white font-bold text-lg">
                 Ativar Faixa de Aviso
               </Label>
             </div>
             
-            <Button
+            <button
               onClick={() => {
                 localStorage.setItem("gang-boyz-banner-text", bannerText)
                 localStorage.setItem("gang-boyz-banner-active", isBannerActive.toString())
                 localStorage.setItem("gang-boyz-banner-emoji", bannerEmoji)
                 localStorage.setItem("gang-boyz-banner-bg-color", bannerBgColor)
+                localStorage.setItem("gang-boyz-banner-height", bannerHeight.toString())
+                localStorage.setItem("gang-boyz-banner-speed", bannerSpeed.toString())
+                localStorage.setItem("gang-boyz-banner-repetitions", bannerRepetitions.toString())
                 window.dispatchEvent(new CustomEvent('bannerSettingsUpdated'))
                 toast.success("Configurações da faixa salvas!")
               }}
-              className="bg-red-600 hover:bg-red-500 text-white"
+              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-red-500/25 transition-all duration-300 flex items-center text-lg"
             >
-              <Save className="h-4 w-4 mr-2" />
-              Salvar Faixa
-            </Button>
+              <Save className="h-5 w-5 mr-3" />
+              Salvar Configurações
+            </button>
           </div>
           
-          <div className="mt-4 p-4 bg-black/30 rounded-lg border border-gray-700">
-            <p className="text-sm text-gray-300 mb-2">Preview:</p>
-            <div className={`h-8 flex items-center overflow-hidden rounded ${
-              bannerBgColor === 'black' ? 'bg-black' :
-              bannerBgColor === 'red' ? 'bg-red-600' :
-              bannerBgColor === 'blue' ? 'bg-blue-600' :
-              bannerBgColor === 'yellow' ? 'bg-yellow-500' :
-              bannerBgColor === 'green' ? 'bg-green-600' :
-              bannerBgColor === 'sync' ? 'bg-gradient-to-r from-red-600 to-blue-600' :
-              'bg-black'
-            }`}>
-              {isBannerActive ? (
-                <div className="flex animate-scroll text-white font-bold text-sm tracking-wider whitespace-nowrap">
-                  <span className="mr-8">{bannerEmoji} {bannerText} {bannerEmoji}</span>
-                  <span className="mr-8">{bannerEmoji} {bannerText} {bannerEmoji}</span>
-                  <span className="mr-8">{bannerEmoji} {bannerText} {bannerEmoji}</span>
-                </div>
-              ) : (
-                <div className="text-gray-500 text-sm">Faixa desativada</div>
-              )}
+          {/* Preview Melhorado */}
+          <div className="bg-gradient-to-r from-white/10 to-white/20 backdrop-blur-md border border-white/20 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-2 shadow-lg shadow-blue-500/25">
+                <Eye className="h-5 w-5 text-white" />
+              </div>
+              <h3 className="text-xl font-black text-white">Preview da Faixa</h3>
+            </div>
+            
+            <div className="bg-black/50 rounded-xl p-4 border border-white/10">
+              <div 
+                className={`flex items-center overflow-hidden rounded-lg ${
+                  bannerBgColor === 'black' ? 'bg-black' :
+                  bannerBgColor === 'red' ? 'bg-red-600' :
+                  bannerBgColor === 'blue' ? 'bg-blue-600' :
+                  bannerBgColor === 'yellow' ? 'bg-yellow-500' :
+                  bannerBgColor === 'green' ? 'bg-green-600' :
+                  bannerBgColor === 'sync' ? 'bg-gradient-to-r from-red-600 to-blue-600' :
+                  'bg-black'
+                }`}
+                style={{ height: `${bannerHeight}px` }}
+              >
+                {isBannerActive ? (
+                  <div 
+                    className="flex text-white font-bold text-sm tracking-wider whitespace-nowrap"
+                    style={{ 
+                      animation: `scroll ${Math.max(5, 20 - (bannerSpeed / 5))}s linear infinite` 
+                    }}
+                  >
+                    {Array.from({ length: bannerRepetitions }, (_, i) => (
+                      <span key={i} className="mr-8">{bannerEmoji} {bannerText} {bannerEmoji}</span>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-gray-500 text-sm flex items-center justify-center w-full">
+                    Faixa desativada
+                  </div>
+                )}
+              </div>
+              
+              <div className="mt-4 flex items-center justify-between text-sm text-gray-400">
+                <span>Altura: {bannerHeight}px</span>
+                <span>Velocidade: {bannerSpeed}%</span>
+                <span>Repetições: {bannerRepetitions}</span>
+                <span>Status: {isBannerActive ? 'Ativa' : 'Inativa'}</span>
+              </div>
             </div>
           </div>
-        </Card>
+        </div>
+
+        {/* Botão de Gerenciamento da Faixa de Aviso */}
+        <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 mb-8 hover:border-red-400/50 hover:bg-white/10 transition-all duration-500 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-3 shadow-lg shadow-green-500/25">
+                <Settings className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-white">Gerenciar Faixa de Aviso</h3>
+                <p className="text-gray-400 text-sm">Configure a faixa de aviso para todas as páginas do site</p>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => {
+                // Salvar configurações no formato do DemoBanner
+                const demoBannerSettings = {
+                  text: bannerText,
+                  emoji: bannerEmoji,
+                  bgColor: bannerBgColor,
+                  height: bannerHeight,
+                  speed: bannerSpeed,
+                  repetitions: bannerRepetitions,
+                  isActive: isBannerActive
+                }
+                
+                console.log("🚀 Admin: Salvando configurações:", demoBannerSettings)
+                localStorage.setItem("demo-banner-settings", JSON.stringify(demoBannerSettings))
+                
+                // Disparar evento para atualizar todas as páginas
+                console.log("📡 Admin: Disparando evento customizado...")
+                window.dispatchEvent(new CustomEvent('demoBannerSettingsUpdated'))
+                
+                toast.success("Faixa de aviso sincronizada em todas as páginas!")
+              }}
+              className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-green-500/25 transition-all duration-300 flex items-center text-lg"
+            >
+              <Settings className="h-5 w-5 mr-2" />
+              Sincronizar com Todas as Páginas
+            </button>
+          </div>
+          
+          <div className="mt-4 p-4 bg-white/5 rounded-xl border border-white/10">
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span>Sincronização automática: Homepage, Camisetas, Calças, Moletons, Jaquetas e todas as páginas de produtos</span>
+            </div>
+          </div>
+        </div>
 
         {/* Carrossel Hero Section */}
-        <Card className="p-6 mb-8 bg-gradient-to-br from-red-900/20 to-red-800/20 border border-red-700/30">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-2 h-8 bg-red-500 rounded-full"></div>
-            <h2 className="text-xl font-bold text-white">Carrossel Hero - Banners Principais</h2>
+        <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 mb-8 hover:border-red-400/50 hover:bg-white/10 transition-all duration-500 hover:scale-105">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-3 shadow-lg shadow-blue-500/25">
+              <div className="w-6 h-6 bg-white rounded-full"></div>
+            </div>
+            <h2 className="text-2xl font-black text-white">Carrossel Hero - Banners Principais</h2>
           </div>
-          <p className="text-gray-400 mb-6">
+          <p className="text-gray-300 mb-6">
             Estes banners aparecem no carrossel principal da homepage com alternância automática a cada 4 segundos.
             Use as setas laterais ou os indicadores para navegar manualmente.
           </p>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {banners.filter(banner => banner.id.startsWith("hero-banner")).map((banner) => (
-              <div key={banner.id} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+              <div key={banner.id} className="bg-gradient-to-br from-white/10 to-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:border-red-400/50 transition-all duration-300">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-bold text-white">{banner.name}</h3>
                   <div className="flex items-center gap-2">
@@ -761,26 +931,24 @@ export default function HomepageBannersPage() {
               </div>
             ))}
           </div>
-        </Card>
+        </div>
 
         {/* Banners List */}
         <div className="space-y-6 md:space-y-8">
           {banners.map((banner) => (
-            <Card key={banner.id} className="p-4 md:p-8 bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-gray-600 transition-all duration-300">
+            <div key={banner.id} className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 md:p-8 hover:border-red-400/50 hover:bg-white/10 transition-all duration-500 hover:scale-105">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                 {/* Banner Info */}
                 <div>
                   <div className="flex items-center justify-between mb-2 md:mb-3">
                     <h3 className="text-xl md:text-2xl font-bold text-white">{banner.name}</h3>
                     {!banner.id.startsWith("hero-banner") && (
-                      <Button
+                      <button
                         onClick={() => deleteBanner(banner.id)}
-                        variant="outline"
-                        size="sm"
-                        className="border-red-600 text-red-400 hover:bg-red-900 hover:text-white"
+                        className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-2 rounded-xl shadow-lg hover:shadow-red-500/25 transition-all duration-300 flex items-center"
                       >
                         <Trash2 className="h-4 w-4" />
-                      </Button>
+                      </button>
                     )}
                   </div>
                   <p className="text-gray-400 mb-4 md:mb-6 leading-relaxed text-sm md:text-base">{banner.description}</p>
@@ -824,7 +992,7 @@ export default function HomepageBannersPage() {
                         const file = e.target.files?.[0]
                         if (file) handleMediaChange(banner.id, file)
                       }}
-                      className="cursor-pointer bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                      className="cursor-pointer bg-white/10 border-white/20 text-white placeholder-gray-400 hover:bg-white/20"
                     />
                     <p className="text-xs text-gray-500 leading-relaxed">
                       <span className="text-green-400">Imagens:</span> máximo 5MB (JPG, PNG, WebP, GIF)<br/>
@@ -868,32 +1036,37 @@ export default function HomepageBannersPage() {
                   )}
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 
         {/* Instructions */}
-        <Card className="p-6 mt-8 bg-blue-50 border-blue-200">
-          <h3 className="text-lg font-semibold text-blue-900 mb-4">Instruções de Uso</h3>
-          <div className="space-y-3 text-blue-800">
+        <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 mt-8 hover:border-red-400/50 hover:bg-white/10 transition-all duration-500 hover:scale-105">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-3 shadow-lg shadow-green-500/25">
+              <div className="w-6 h-6 bg-white rounded-full"></div>
+            </div>
+            <h3 className="text-2xl font-black text-white">Instruções de Uso</h3>
+          </div>
+          <div className="space-y-3 text-gray-300">
             <div>
-              <h4 className="font-semibold">Dimensões Recomendadas:</h4>
+              <h4 className="font-black text-white">Dimensões Recomendadas:</h4>
               <p className="text-sm">Use imagens com proporção 16:9 (1920x1080px) para melhor qualidade.</p>
             </div>
             <div>
-              <h4 className="font-semibold">Formatos Suportados:</h4>
+              <h4 className="font-black text-white">Formatos Suportados:</h4>
               <p className="text-sm">JPG, PNG e WebP. WebP oferece melhor compressão mantendo a qualidade.</p>
             </div>
             <div>
-              <h4 className="font-semibold">Tamanho do Arquivo:</h4>
+              <h4 className="font-black text-white">Tamanho do Arquivo:</h4>
               <p className="text-sm">Máximo 5MB por imagem para garantir carregamento rápido.</p>
             </div>
             <div>
-              <h4 className="font-semibold">Dica:</h4>
+              <h4 className="font-black text-white">Dica:</h4>
               <p className="text-sm">Use imagens com boa resolução mas otimizadas para web para melhor performance.</p>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   )

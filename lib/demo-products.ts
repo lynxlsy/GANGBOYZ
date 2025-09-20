@@ -21,6 +21,11 @@ export interface Product {
   isPromotion: boolean
   installments: string
   brand: string
+  // Novos campos para o Card 1 (Card Completo)
+  sizes: string[]
+  color: string
+  categories: string[]
+  discountPercentage?: number
 }
 
 export interface Category {
@@ -38,8 +43,8 @@ export const demoHotProducts: HotProduct[] = [
     description: "Jaqueta streetwear com design exclusivo e tecido premium",
     price: 299.90,
     originalPrice: 399.90,
-    image: "/black-oversized-streetwear-jacket.jpg",
-    category: "Jaquetas",
+    image: "/placeholder-default.svg",
+    category: "Produtos",
     isActive: true
   },
   {
@@ -48,8 +53,8 @@ export const demoHotProducts: HotProduct[] = [
     description: "Moletom com logo bordado e capuz ajustável",
     price: 199.90,
     originalPrice: 249.90,
-    image: "/black-streetwear-hoodie-with-white-logo.jpg",
-    category: "Moletons",
+    image: "/placeholder-default.svg",
+    category: "Produtos",
     isActive: true
   },
   {
@@ -58,8 +63,8 @@ export const demoHotProducts: HotProduct[] = [
     description: "Camiseta com estampa neon e design urbano",
     price: 89.90,
     originalPrice: 129.90,
-    image: "/black-t-shirt-with-neon-graphic-design.jpg",
-    category: "Camisetas",
+    image: "/placeholder-default.svg",
+    category: "Produtos",
     isActive: true
   },
   {
@@ -68,8 +73,8 @@ export const demoHotProducts: HotProduct[] = [
     description: "Calça cargo com bolsos laterais e corte moderno",
     price: 179.90,
     originalPrice: 229.90,
-    image: "/black-cargo-streetwear.png",
-    category: "Calças",
+    image: "/placeholder-default.svg",
+    category: "Produtos",
     isActive: true
   },
   {
@@ -78,8 +83,8 @@ export const demoHotProducts: HotProduct[] = [
     description: "Boné ajustável com logo bordado em branco",
     price: 79.90,
     originalPrice: 99.90,
-    image: "/black-snapback-cap-with-white-embroidery.jpg",
-    category: "Acessórios",
+    image: "/placeholder-default.svg",
+    category: "Produtos",
     isActive: true
   },
   {
@@ -88,8 +93,8 @@ export const demoHotProducts: HotProduct[] = [
     description: "Colar de corrente prata com design minimalista",
     price: 149.90,
     originalPrice: 199.90,
-    image: "/silver-chain-necklace-streetwear-accessory.jpg",
-    category: "Acessórios",
+    image: "/placeholder-default.svg",
+    category: "Produtos",
     isActive: true
   }
 ]
@@ -99,137 +104,72 @@ export const demoStandaloneProducts: Product[] = [
   {
     id: "OFFER001",
     name: "Kit Completo Streetwear",
-    description: "Jaqueta + Calça + Camiseta",
     price: 499.90,
     originalPrice: 699.90,
-    image: "/black-oversized-streetwear-jacket.jpg",
+    image: "/placeholder-default.svg",
     isNew: true,
     isPromotion: true,
     installments: "12x de R$ 41,66",
-    brand: "Gang Boyz"
+    brand: "Gang Boyz",
+    sizes: ["P", "M", "G", "GG"],
+    color: "Preto",
+    categories: ["Kits"],
+    discountPercentage: 29
   },
   {
     id: "OFFER002",
     name: "Moletom Premium Collection",
-    description: "Moletom com acabamento premium",
     price: 229.90,
     originalPrice: 299.90,
-    image: "/black-streetwear-hoodie-with-white-logo.jpg",
+    image: "/placeholder-default.svg",
     isNew: false,
     isPromotion: true,
     installments: "6x de R$ 38,32",
-    brand: "Gang Boyz"
+    brand: "Gang Boyz",
+    sizes: ["P", "M", "G", "GG"],
+    color: "Cinza",
+    categories: ["Moletons"],
+    discountPercentage: 23
   },
   {
     id: "OFFER003",
     name: "Camiseta Limited Edition",
-    description: "Edição limitada com design exclusivo",
     price: 119.90,
     originalPrice: 159.90,
-    image: "/black-t-shirt-with-neon-graphic-design.jpg",
+    image: "/placeholder-default.svg",
     isNew: true,
     isPromotion: false,
     installments: "3x de R$ 39,97",
-    brand: "Gang Boyz"
+    brand: "Gang Boyz",
+    sizes: ["P", "M", "G", "GG"],
+    color: "Branco",
+    categories: ["Camisetas"],
+    discountPercentage: 25
   },
   {
     id: "OFFER004",
     name: "Calça Cargo Tactical",
-    description: "Calça cargo com tecnologia tática",
     price: 199.90,
     originalPrice: 279.90,
-    image: "/black-cargo-streetwear.png",
+    image: "/placeholder-default.svg",
     isNew: false,
     isPromotion: true,
     installments: "8x de R$ 24,99",
-    brand: "Gang Boyz"
+    brand: "Gang Boyz",
+    sizes: ["38", "40", "42", "44", "46"],
+    color: "Preto",
+    categories: ["Calças"],
+    discountPercentage: 29
   }
 ]
 
-// Categorias com produtos
+// Categorias com produtos - Simplificadas
 export const demoCategories: Category[] = [
   {
     id: "cat001",
-    name: "Jaquetas",
-    icon: "🧥",
-    products: [
-      {
-        id: "JACKET001",
-        name: "Jaqueta Bomber Premium",
-        price: 349.90,
-        originalPrice: 449.90,
-        image: "/black-oversized-streetwear-jacket.jpg",
-        isNew: true,
-        isPromotion: true,
-        installments: "10x de R$ 34,99",
-        brand: "Gang Boyz"
-      },
-      {
-        id: "JACKET002",
-        name: "Jaqueta Oversized Street",
-        price: 299.90,
-        originalPrice: 399.90,
-        image: "/black-oversized-streetwear-jacket.jpg",
-        isNew: false,
-        isPromotion: true,
-        installments: "8x de R$ 37,49",
-        brand: "Gang Boyz"
-      }
-    ]
-  },
-  {
-    id: "cat002",
-    name: "Moletons",
+    name: "Produtos",
     icon: "👕",
-    products: [
-      {
-        id: "HOODIE001",
-        name: "Moletom Hoodie Gang",
-        price: 199.90,
-        originalPrice: 249.90,
-        image: "/black-streetwear-hoodie-with-white-logo.jpg",
-        isNew: true,
-        isPromotion: true,
-        installments: "6x de R$ 33,32",
-        brand: "Gang Boyz"
-      }
-    ]
-  },
-  {
-    id: "cat003",
-    name: "Camisetas",
-    icon: "👔",
-    products: [
-      {
-        id: "TSHIRT001",
-        name: "Camiseta Graphic Neon",
-        price: 89.90,
-        originalPrice: 129.90,
-        image: "/black-t-shirt-with-neon-graphic-design.jpg",
-        isNew: true,
-        isPromotion: true,
-        installments: "3x de R$ 29,97",
-        brand: "Gang Boyz"
-      }
-    ]
-  },
-  {
-    id: "cat004",
-    name: "Calças",
-    icon: "👖",
-    products: [
-      {
-        id: "PANTS001",
-        name: "Calça Cargo Street",
-        price: 179.90,
-        originalPrice: 229.90,
-        image: "/black-cargo-streetwear.png",
-        isNew: false,
-        isPromotion: true,
-        installments: "5x de R$ 35,98",
-        brand: "Gang Boyz"
-      }
-    ]
+    products: []
   }
 ]
 
@@ -279,6 +219,8 @@ export function resetAllProducts() {
   
   return true
 }
+
+
 
 
 

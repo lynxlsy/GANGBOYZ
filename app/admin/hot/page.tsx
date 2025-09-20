@@ -73,7 +73,7 @@ export default function HotPage() {
         description: "Jaqueta streetwear com design exclusivo",
         price: 299.90,
         originalPrice: 399.90,
-        image: "/black-oversized-streetwear-jacket.jpg",
+        image: "/placeholder-default.svg",
         category: "Jaquetas",
         isActive: true
       },
@@ -83,7 +83,7 @@ export default function HotPage() {
         description: "Moletom com logo bordado",
         price: 199.90,
         originalPrice: 249.90,
-        image: "/black-streetwear-hoodie-with-white-logo.jpg",
+        image: "/placeholder-default.svg",
         category: "Moletons",
         isActive: true
       },
@@ -93,7 +93,7 @@ export default function HotPage() {
         description: "Camiseta com estampa neon",
         price: 89.90,
         originalPrice: 129.90,
-        image: "/black-t-shirt-with-neon-graphic-design.jpg",
+        image: "/placeholder-default.svg",
         category: "Camisetas",
         isActive: true
       },
@@ -103,7 +103,7 @@ export default function HotPage() {
         description: "Calça cargo com bolsos laterais",
         price: 179.90,
         originalPrice: 229.90,
-        image: "/black-cargo-streetwear.png",
+        image: "/placeholder-default.svg",
         category: "Calças",
         isActive: true
       }
@@ -130,16 +130,26 @@ export default function HotPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 via-transparent to-blue-500/5"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/40"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 md:mb-12 gap-4">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
             <Link href="/admin">
-              <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Voltar ao Admin
-              </Button>
+              <div className="bg-gradient-to-br from-white/10 to-white/20 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 hover:border-red-400/50 hover:bg-white/20 transition-all duration-500">
+                <div className="flex items-center gap-2">
+                  <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-lg p-1.5 shadow-lg shadow-red-500/25">
+                    <ArrowLeft className="h-4 w-4 text-white" />
+                  </div>
+                  <span className="text-white font-medium">Voltar ao Admin</span>
+                </div>
+              </div>
             </Link>
             <div className="flex items-center gap-4">
               <div className="hidden md:block">
@@ -152,33 +162,32 @@ export default function HotPage() {
                 />
               </div>
               <div>
-                <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent flex items-center gap-2">
+                <h1 className="text-4xl font-black bg-gradient-to-r from-white via-red-400 to-blue-400 bg-clip-text text-transparent flex items-center gap-2">
                   <Flame className="h-6 w-6 md:h-8 md:w-8 text-red-500" />
                   Produtos HOT
                 </h1>
-                <p className="text-gray-400 text-sm md:text-lg">Gerencie as 4 peças mais em alta</p>
+                <p className="text-gray-300 text-sm md:text-lg">Gerencie as 4 peças mais em alta</p>
               </div>
             </div>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-2 md:gap-3 w-full md:w-auto">
-            <Button 
-              variant="outline" 
+            <button 
               onClick={resetHotProducts}
               disabled={saving}
-              className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white text-sm"
+              className="bg-gradient-to-br from-white/10 to-white/20 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 hover:border-red-400/50 hover:bg-white/20 transition-all duration-500 text-white text-sm flex items-center"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Resetar
-            </Button>
-            <Button 
+            </button>
+            <button 
               onClick={saveHotProducts}
               disabled={saving}
-              className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-semibold text-sm"
+              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-red-500/25 transition-all duration-300 text-sm flex items-center"
             >
               <Save className="h-4 w-4 mr-2" />
               {saving ? "Salvando..." : "Salvar Alterações"}
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -216,7 +225,7 @@ export default function HotPage() {
                     description: "Jaqueta streetwear com design exclusivo",
                     price: 299.90,
                     originalPrice: 399.90,
-                    image: "/black-oversized-streetwear-jacket.jpg",
+                    image: "/placeholder-default.svg",
                     category: "Jaquetas",
                     isActive: true
                   },
@@ -226,7 +235,7 @@ export default function HotPage() {
                     description: "Moletom com logo bordado",
                     price: 199.90,
                     originalPrice: 249.90,
-                    image: "/black-streetwear-hoodie-with-white-logo.jpg",
+                    image: "/placeholder-default.svg",
                     category: "Moletons",
                     isActive: true
                   },
@@ -236,7 +245,7 @@ export default function HotPage() {
                     description: "Camiseta com estampa neon",
                     price: 89.90,
                     originalPrice: 129.90,
-                    image: "/black-t-shirt-with-neon-graphic-design.jpg",
+                    image: "/placeholder-default.svg",
                     category: "Camisetas",
                     isActive: true
                   },
@@ -246,7 +255,7 @@ export default function HotPage() {
                     description: "Calça cargo com bolsos laterais",
                     price: 179.90,
                     originalPrice: 229.90,
-                    image: "/black-cargo-streetwear.png",
+                    image: "/placeholder-default.svg",
                     category: "Calças",
                     isActive: true
                   }
@@ -443,14 +452,12 @@ export default function HotPage() {
             <h3 className="text-lg font-semibold text-blue-900 mb-4">Imagens Disponíveis na Pasta Public</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                "/black-oversized-streetwear-jacket.jpg",
-                "/black-streetwear-hoodie-with-white-logo.jpg", 
-                "/black-t-shirt-with-neon-graphic-design.jpg",
-                "/black-cargo-streetwear.png",
-                "/black-snapback-cap-with-white-embroidery.jpg",
-                "/silver-chain-necklace-streetwear-accessory.jpg",
-                "/urban-streetwear-model-in-black-hoodie-against-dar.jpg",
-                "/placeholder.jpg"
+                "/banner-hero.svg",
+                "/banner-hero.svg",
+                "/banner-footer.svg",
+                "/banner-chefe.svg",
+                "/banner-small.svg",
+                "/placeholder-default.svg"
               ].map((imagePath) => (
                 <div key={imagePath} className="text-center">
                   <div className="w-16 h-16 mx-auto mb-2 border border-gray-300 rounded overflow-hidden bg-gray-100">

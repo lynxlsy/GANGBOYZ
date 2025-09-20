@@ -3,56 +3,55 @@
 import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
+import { BannerStrip } from "@/components/banner-strip"
 import { BannerGrid } from "@/components/banner-grid"
 import { HotSection } from "@/components/hot-section"
 import { RecommendationsSection } from "@/components/recommendations-section"
 import { ExploreCategories } from "@/components/explore-categories"
 import { FeaturedProducts } from "@/components/featured-products"
-import { FooterBanner } from "@/components/footer-banner"
-import { Footer } from "@/components/footer"
+import { BannersShowcase } from "@/components/banners-showcase"
+import { AboutSection } from "@/components/about-section"
+import { ServicesSection } from "@/components/services-section"
+import { FooterV2 } from "@/components/footer-v2"
 import { CartDrawer } from "@/components/cart-drawer"
 import { WelcomeModal } from "@/components/welcome-modal"
+import { ScrollToTop } from "@/components/scroll-to-top"
+import { CardsShowcase } from "@/components/cards-showcase"
+import { WhatsAppButton } from "@/components/whatsapp-button"
 
 export default function HomePage() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Simular carregamento inicial para evitar flash de conteúdo antigo
-    const timer = setTimeout(() => {
-      setIsLoading(false)
+    // Mostrar modal de boas-vindas apenas uma vez
+    const hasSeenWelcome = localStorage.getItem('gang-boyz-welcome-seen')
+    if (!hasSeenWelcome) {
       setShowWelcomeModal(true)
-    }, 100)
-
-    return () => clearTimeout(timer)
+      localStorage.setItem('gang-boyz-welcome-seen', 'true')
+    }
   }, [])
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white text-lg">Carregando...</p>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />
       <main className="relative">
         <Hero />
+        <BannerStrip />
         <BannerGrid />
         <ExploreCategories />
         <RecommendationsSection />
         <FeaturedProducts />
+        <BannersShowcase />
+        <CardsShowcase />
         <HotSection />
+        <AboutSection />
+        <ServicesSection />
       </main>
-      <FooterBanner />
-      <Footer />
+      <FooterV2 />
       <CartDrawer />
       <WelcomeModal isOpen={showWelcomeModal} onClose={() => setShowWelcomeModal(false)} />
+      <ScrollToTop />
+      <WhatsAppButton />
     </div>
   )
 }

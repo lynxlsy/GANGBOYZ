@@ -48,7 +48,7 @@ export function CartDrawer() {
                 {state.items.map((item) => (
                   <div key={item.id} className="flex items-center space-x-4 bg-neutral-800 p-4 rounded-lg">
                     <img
-                      src={item.image || "/placeholder.svg"}
+                      src={item.image || "/placeholder-default.svg"}
                       alt={item.name}
                       className="w-16 h-16 object-cover rounded"
                     />
