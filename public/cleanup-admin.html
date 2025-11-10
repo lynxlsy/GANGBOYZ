@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpeza Admin - Gang BoyZ</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #1f2937;
+            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .warning {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 30px;
+            color: #92400e;
+        }
+        .warning strong {
+            color: #b45309;
+        }
+        .button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 10px;
+        }
+        .button:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+        .button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+            color: #065f46;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .list {
+            text-align: left;
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .list li {
+            margin: 8px 0;
+            color: #374151;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🧹</div>
+        <h1>Limpeza Completa do Dashboard</h1>
+        <p class="subtitle">Remover todos os dados de teste do admin</p>
+        
+        <div class="warning">
+            <strong>⚠️ Atenção:</strong> Esta ação irá remover TODOS os dados de teste, incluindo produtos, banners, coleções e configurações. Esta ação é irreversível e deixará o dashboard completamente limpo para o cliente testar.
+        </div>
+
+        <div class="list">
+            <h3 style="margin-top: 0; color: #1f2937;">Dados que serão removidos:</h3>
+            <ul>
+                <li>✅ Produtos HOT de teste</li>
+                <li>✅ Produtos standalone de teste</li>
+                <li>✅ Banners de demonstração</li>
+                <li>✅ Coleções de teste</li>
+                <li>✅ Recomendações de teste</li>
+                <li>✅ Categorias de demonstração</li>
+                <li>✅ Todos os dados de sessão</li>
+            </ul>
+        </div>
+
+        <button id="cleanupBtn" class="button" onclick="executeCleanup()">
+            <span id="btnText">🗑️ Limpar Tudo</span>
+        </button>
+        
+        <button class="button" onclick="window.location.href='/admin'" style="background: #3b82f6;">
+            📊 Ir para Dashboard
+        </button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Lista de todas as chaves que contêm dados de teste
+        const keysToRemove = [
+            "gang-boyz-hot-products",
+            "gang-boyz-standalone-products", 
+            "gang-boyz-categories",
+            "gang-boyz-homepage-banners",
+            "gang-boyz-collections",
+            "gang-boyz-test-products",
+            "gang-boyz-products-backup",
+            "gang-boyz-recommendations",
+            "gang-boyz-banners",
+            "gang-boyz-lancamentos",
+            "gang-boyz-em-alta",
+            "gang-boyz-ofertas",
+            "gang-boyz-contacts",
+            "gang-boyz-services",
+            "gang-boyz-about"
+        ]
+
+        function executeCleanup() {
+            const btn = document.getElementById('cleanupBtn')
+            const btnText = document.getElementById('btnText')
+            const result = document.getElementById('result')
+            
+            // Desabilitar botão e mostrar loading
+            btn.disabled = true
+            btnText.innerHTML = '<div class="loading"></div> Limpando...'
+            
+            try {
+                console.log('🧹 Iniciando limpeza completa do dashboard admin...')
+                
+                // Limpar localStorage
+                console.log('📦 Limpando localStorage...')
+                let removedCount = 0
+                keysToRemove.forEach(key => {
+                    if (localStorage.getItem(key)) {
+                        localStorage.removeItem(key)
+                        removedCount++
+                        console.log(`✅ Removido: ${key}`)
+                    }
+                })
+                console.log(`✅ ${removedCount} itens removidos do localStorage`)
+                
+                // Limpar sessionStorage
+                console.log('🗂️ Limpando sessionStorage...')
+                sessionStorage.clear()
+                console.log('✅ sessionStorage limpo!')
+                
+                // Disparar eventos de atualização
+                console.log('🔄 Disparando eventos de atualização...')
+                const events = [
+                    'hotProductsUpdated',
+                    'productsUpdated', 
+                    'bannersUpdated',
+                    'collectionsUpdated',
+                    'recommendationsUpdated',
+                    'lancamentosUpdated',
+                    'emAltaUpdated',
+                    'ofertasUpdated'
+                ]
+                
+                events.forEach(event => {
+                    window.dispatchEvent(new CustomEvent(event))
+                    console.log(`📡 Evento disparado: ${event}`)
+                })
+                
+                // Mostrar sucesso
+                result.innerHTML = `
+                    <div class="success">
+                        <h3>🎉 Limpeza Concluída com Sucesso!</h3>
+                        <p><strong>✅ ${removedCount} itens removidos do localStorage</strong></p>
+                        <p><strong>✅ sessionStorage limpo</strong></p>
+                        <p><strong>✅ Eventos de atualização disparados</strong></p>
+                        <p>O dashboard admin está agora completamente limpo e pronto para o cliente testar!</p>
+                    </div>
+                `
+                
+                console.log('🎉 Limpeza completa finalizada!')
+                console.log('✨ Dashboard admin está agora limpo e pronto para o cliente testar!')
+                
+            } catch (error) {
+                console.error('❌ Erro durante a limpeza:', error)
+                result.innerHTML = `
+                    <div style="background: #fee2e2; border: 1px solid #ef4444; border-radius: 8px; padding: 16px; margin-top: 20px; color: #dc2626;">
+                        <h3>❌ Erro durante a limpeza</h3>
+                        <p>Ocorreu um erro: ${error.message}</p>
+                    </div>
+                `
+            } finally {
+                // Reabilitar botão
+                btn.disabled = false
+                btnText.innerHTML = '✅ Limpeza Concluída'
+            }
+        }
+
+        // Executar limpeza automática se solicitado
+        const urlParams = new URLSearchParams(window.location.search)
+        if (urlParams.get('auto') === 'true') {
+            setTimeout(() => {
+                executeCleanup()
+            }, 1000)
+        }
+    </script>
+</body>
+</html>
+

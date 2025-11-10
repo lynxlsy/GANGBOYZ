@@ -1,0 +1,393 @@
+/* Mobile Optimizations - Gang Boyz E-commerce */
+
+/* Touch targets - Garantir tamanho mínimo de 44px para elementos touch */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+/* Scrollbar hide para mobile */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch manipulation para melhor performance em mobile */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch pan para scroll horizontal */
+.touch-pan-x {
+  touch-action: pan-x;
+}
+
+/* Melhorias para imagens em mobile */
+.mobile-image {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Espaçamentos otimizados para mobile */
+.mobile-spacing {
+  padding: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .mobile-spacing {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .mobile-spacing {
+    padding: 1.5rem;
+  }
+}
+
+/* Grid responsivo para produtos */
+.product-grid-mobile {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .product-grid-mobile {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .product-grid-mobile {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-grid-mobile {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Texto responsivo */
+.text-responsive {
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+@media (min-width: 640px) {
+  .text-responsive {
+    font-size: 0.875rem;
+    line-height: 1.3;
+  }
+}
+
+@media (min-width: 768px) {
+  .text-responsive {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+}
+
+/* Botões otimizados para mobile */
+.mobile-button {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  touch-action: manipulation;
+}
+
+/* Cards de produto otimizados */
+.product-card-mobile {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card-mobile:active {
+  transform: scale(0.98);
+}
+
+/* Navegação mobile */
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+/* Sidebar mobile */
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  max-width: 320px;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.mobile-sidebar.open {
+  transform: translateX(0);
+}
+
+/* Overlay para mobile */
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+}
+
+/* Melhorias para carrossel mobile */
+.mobile-carousel {
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+}
+
+.mobile-carousel-item {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Indicadores de carrossel mobile */
+.mobile-carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.mobile-carousel-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition: background 0.3s ease;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.mobile-carousel-indicator.active {
+  background: #ef4444;
+}
+
+/* Melhorias para formulários mobile */
+.mobile-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #374151;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  touch-action: manipulation;
+}
+
+.mobile-input:focus {
+  outline: none;
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Melhorias para texto em mobile */
+.mobile-text {
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+@media (min-width: 768px) {
+  .mobile-text {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}
+
+/* Otimizações para performance mobile */
+.mobile-optimized {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Melhorias para acessibilidade mobile */
+.mobile-accessible {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Melhorias para scroll suave */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Melhorias para imagens responsivas */
+.responsive-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Melhorias para containers responsivos */
+.responsive-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .responsive-container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .responsive-container {
+    padding: 0 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-container {
+    padding: 0 4rem;
+  }
+}
+
+/* Melhorias para grid responsivo */
+.responsive-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+}
+
+/* Melhorias para flexbox responsivo */
+.responsive-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .responsive-flex {
+    flex-direction: row;
+    gap: 2rem;
+  }
+}
+
+/* Melhorias para espaçamento responsivo */
+.responsive-spacing {
+  padding: 1rem;
+  margin: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .responsive-spacing {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .responsive-spacing {
+    padding: 2rem;
+    margin: 1.5rem;
+  }
+}
+
+/* Melhorias para tipografia responsiva */
+.responsive-typography {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 640px) {
+  .responsive-typography {
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+}
+
+@media (min-width: 768px) {
+  .responsive-typography {
+    font-size: 1.25rem;
+    line-height: 1.7;
+  }
+}
+
+/* Melhorias para botões responsivos */
+.responsive-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+@media (min-width: 768px) {
+  .responsive-button {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+/* Melhorias para cards responsivos */
+.responsive-card {
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+@media (min-width: 768px) {
+  .responsive-card {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+}

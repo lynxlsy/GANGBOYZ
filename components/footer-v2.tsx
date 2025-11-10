@@ -5,8 +5,39 @@ import { Input } from "@/components/ui/input"
 import { Instagram } from "lucide-react"
 import Image from "next/image"
 import { BannerTemplate } from "@/components/banner-template"
+import { useState, useEffect } from "react"
 
-export function FooterV2() {
+interface Contact {
+  id: string
+  platform: string
+  url: string
+  isActive: boolean
+  displayText?: string
+}
+
+export function Footer() {
+  const [socialContacts, setSocialContacts] = useState<Contact[]>([])
+
+  useEffect(() => {
+    loadContactData()
+    
+    // Escutar eventos de atualização
+    const handleContactsUpdate = () => {
+      loadContactData()
+    }
+    
+    window.addEventListener('contactsUpdated', handleContactsUpdate)
+    return () => window.removeEventListener('contactsUpdated', handleContactsUpdate)
+  }, [])
+
+  const loadContactData = () => {
+    // Carregar contatos sociais
+    const savedSocialContacts = localStorage.getItem("gang-boyz-contacts")
+    if (savedSocialContacts) {
+      const parsedContacts = JSON.parse(savedSocialContacts)
+      setSocialContacts(parsedContacts)
+    }
+  }
 
   return (
     <footer className="bg-black text-white">
@@ -45,7 +76,6 @@ export function FooterV2() {
                 <li><a href="#" className="hover:text-white transition-colors">Política de Privacidade</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Termos de Uso</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contato</a></li>
               </ul>
             </div>
 
@@ -53,13 +83,34 @@ export function FooterV2() {
             <div className="md:col-span-1">
               <h3 className="text-white font-semibold mb-4">REDES SOCIAIS</h3>
               <div className="flex items-center space-x-4">
-                <a 
-                  href="#" 
-                  className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
-                >
-                  <Instagram className="h-5 w-5" />
-                  <span className="text-sm">@gangboyz</span>
-                </a>
+                {socialContacts
+                  .filter(contact => contact.isActive)
+                  .map((contact) => (
+                    <a 
+                      key={contact.id}
+                      href={contact.url || '#'} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
+                    >
+                      {contact.id === 'instagram' ? (
+                        <>
+                          <Instagram className="h-5 w-5" />
+                          {contact.displayText && (
+                            <span className="text-sm">{contact.displayText}</span>
+                          )}
+                        </>
+                      ) : contact.id === 'whatsapp' ? (
+                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">W</span>
+                        </div>
+                      ) : (
+                        <div className="w-5 h-5 bg-gray-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">?</span>
+                        </div>
+                      )}
+                    </a>
+                  ))}
               </div>
             </div>
           </div>

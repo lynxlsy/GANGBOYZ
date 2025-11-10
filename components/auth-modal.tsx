@@ -154,7 +154,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
 
             <Button
               type="submit"
-              className="w-full bg-white text-black hover:bg-gray-200 font-semibold"
+              className="w-full bg-white text-black hover:bg-gray-200 font-semibold cursor-pointer"
               disabled={isLoading}
             >
               {isLoading ? (

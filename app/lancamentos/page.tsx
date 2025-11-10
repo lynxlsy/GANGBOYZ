@@ -2,61 +2,47 @@
 
 import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
-import { FooterV2 } from "@/components/footer-v2"
+import { Footer } from "@/components/footer"
 import { ProductTemplate } from "@/components/product-template"
-import { ProductFilters } from "@/components/product-filters"
-import { DemoBanner } from "@/components/demo-banner"
 import { useProducts } from "@/lib/products-context-simple"
 import { useCart } from "@/lib/cart-context"
 import { Sparkles } from "lucide-react"
 import Link from "next/link"
+import { eventManager } from "@/lib/event-manager"
 
 export default function LancamentosPage() {
   const { products } = useProducts()
-  const { addToCart } = useCart()
+  const { addItem } = useCart()
 
-  // Filtrar produtos marcados como "Novo" ou com label "NEW"
+  // Filtrar produtos marcados como "Novo" ou com label "NEW" ou destacados para "Lançamentos"
   const lancamentos = products.filter(product => 
     product.isNew === true || 
-    product.label === "NEW" || 
-    product.labelType === "promocao" ||
+    product.destacarLancamentos === true ||
     product.categories?.some(cat => cat.toLowerCase().includes("lançamento"))
   )
 
   // Escutar eventos de produtos criados e carregar automaticamente
   useEffect(() => {
     const handleProductCreated = () => {
-      console.log("🔄 Produto criado detectado na página de lançamentos")
-      // Forçar atualização do contexto
-      window.dispatchEvent(new CustomEvent('forceProductsReload'))
+      // Forçar atualização dos produtos em todas as páginas
+      eventManager.emitThrottled('forceProductsReload');
     }
 
-    // Carregar produtos automaticamente quando a página carregar
-    const loadProductsOnMount = () => {
-      console.log("🔄 Carregando produtos automaticamente na página de lançamentos")
-      window.dispatchEvent(new CustomEvent('forceProductsReload'))
-    }
-
-    // Carregar imediatamente
-    loadProductsOnMount()
-
-    // Carregar quando a página ganhar foco (voltar da admin)
-    const handleFocus = () => {
-      console.log("🔄 Página em foco - recarregando produtos automaticamente")
-      window.dispatchEvent(new CustomEvent('forceProductsReload'))
-    }
-
-    window.addEventListener('testProductCreated', handleProductCreated)
-    window.addEventListener('focus', handleFocus)
+    eventManager.subscribe('testProductCreated', handleProductCreated)
     
     return () => {
-      window.removeEventListener('testProductCreated', handleProductCreated)
-      window.removeEventListener('focus', handleFocus)
+      eventManager.unsubscribe('testProductCreated', handleProductCreated)
     }
   }, [])
 
   const handleAddToCart = (product: any) => {
-    addToCart(product)
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: 1
+    })
   }
 
   return (
@@ -66,26 +52,18 @@ export default function LancamentosPage() {
       {/* Espaçamento para mover a faixa mais 2cm para baixo */}
       <div className="h-[180px]"></div>
       
-      {/* Faixa de Aviso - Site Demonstrativo (separada do header) */}
-      <DemoBanner />
-      
       <main className="pt-0">
         <div className="flex min-h-screen">
-          {/* Sidebar de Filtros */}
-          <div className="w-80 bg-black pt-0 ml-[40px]">
-            <ProductFilters category="Lançamentos" subcategory="Novos" />
-          </div>
-
           {/* Conteúdo Principal */}
           <div className="flex-1 bg-black">
             {/* Header da Categoria */}
             <div className="px-8 py-8">
-              <div className="mb-4">
-                <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                  <Sparkles className="h-8 w-8 text-blue-400" />
-                  Lançamentos
-                </h1>
-                <p className="text-gray-400">Produtos encontrados: {lancamentos.length}</p>
+              <div className="mb-4 flex items-center">
+                <Sparkles className="h-8 w-8 text-yellow-400 mr-3" />
+                <div>
+                  <h1 className="text-3xl font-bold text-white">Lançamentos</h1>
+                  <p className="text-gray-400">Produtos encontrados: {lancamentos.length}</p>
+                </div>
               </div>
             </div>
 
@@ -140,7 +118,7 @@ export default function LancamentosPage() {
         </div>
       </main>
 
-      <FooterV2 />
+      <Footer />
     </div>
   )
 }

@@ -1,0 +1,22 @@
+RELATÓRIO DE ITENS EM ANDAMENTO - ATUALIZADO
+=====================================
+
+ITENS EM ANDAMENTO:
+------------------
+1. PÁGINA: Painel Administrativo (/admin) - Painel principal de administração
+   O que falta: colocar sicronização com firebase nos cards e nos banners fazendo que os usuarios consigam ver as imagens e produtos indepedente da região.
+   
+   OBSERVAÇÕES DE PROGRESSO:
+   - A funcionalidade de administração está parcialmente implementada
+   - Seria necessário implementar a sincronização completa com Firebase para banners e cards
+   - Isso permitiria que os usuários vejam imagens e produtos independentemente da região
+
+ITENS PENDENTES DE EXCLUSÃO:
+---------------------------
+1. PÁGINA: Produtos - Camisetas (/camisetas) - Página da categoria camisetas
+   OBSERVAÇÃO: Esta página consiste em múltiplas subpáginas para diferentes tipos de camisetas (basica, manga-curta, etc.). Será necessário decidir se todas as subpáginas devem ser excluídas ou apenas a página principal.
+
+2. ITEM FIREBASE: Debug Firebase (/debug-banners) - Debug da integração de banners com Firebase [Firebase]
+   OBSERVAÇÃO: Esta página ainda existe e pode ser necessária para debug da integração Firebase.
+
+RELATÓRIO ATUALIZADO EM: 21/10/2025, 22:45:30

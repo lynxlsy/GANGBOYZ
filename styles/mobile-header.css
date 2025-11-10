@@ -1,0 +1,87 @@
+/* Mobile Header Optimizations */
+
+/* Breakpoints customizados para mobile */
+@media (max-width: 320px) {
+  .mobile-header-xs {
+    padding: 0.25rem;
+  }
+  
+  .mobile-header-xs .mobile-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+  
+  .mobile-header-xs .mobile-text {
+    display: none;
+  }
+}
+
+@media (min-width: 321px) and (max-width: 480px) {
+  .mobile-header-sm {
+    padding: 0.375rem;
+  }
+  
+  .mobile-header-sm .mobile-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .mobile-header-sm .mobile-text {
+    font-size: 0.625rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 640px) {
+  .mobile-header-md {
+    padding: 0.5rem;
+  }
+  
+  .mobile-header-md .mobile-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+  
+  .mobile-header-md .mobile-text {
+    font-size: 0.75rem;
+  }
+}
+
+/* Otimizações para elementos espremidos */
+.mobile-header-container {
+  min-height: 3rem;
+  max-height: 4rem;
+}
+
+.mobile-header-item {
+  min-width: 2rem;
+  max-width: 4rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  touch-action: manipulation;
+}
+
+.mobile-header-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+}
+
+/* WhatsApp icon fix */
+.whatsapp-icon {
+  fill: currentColor;
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Ensure proper z-index for mobile header elements */
+.mobile-header-zindex {
+  z-index: 50;
+  position: relative;
+}
+
+.mobile-header-button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 10;
+}

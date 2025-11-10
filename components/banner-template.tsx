@@ -80,9 +80,6 @@ export function BannerTemplate({
           onClick={onClick}
           priority
         />
-        
-        {/* Overlay opcional para hover */}
-        <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors duration-300"></div>
       </div>
     </div>
   )

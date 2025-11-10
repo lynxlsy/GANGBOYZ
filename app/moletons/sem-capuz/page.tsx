@@ -6,5 +6,9 @@ import { getCategoryConfig } from "@/lib/category-config"
 export default function MoletonsSemCapuzPage() {
   const config = getCategoryConfig('sem-capuz')
   
-  return <ProductCategoryPage config={config} subcategoryKey="sem-capuz" />
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <ProductCategoryPage config={config} subcategoryKey="sem-capuz" />
+    </div>
+  )
 }

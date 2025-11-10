@@ -2,24 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { ProductCard } from "./product-card"
-import { Product } from "@/lib/demo-products"
+import { CardProduct, useCards } from "@/lib/cards-context"
 import { useCart } from "@/lib/cart-context"
 
 export function ProductShowcase() {
-  const [products, setProducts] = useState<Product[]>([])
+  const { cardProducts: products } = useCards()
   const { addItem, openCart } = useCart()
 
-  useEffect(() => {
-    // Carregar produtos do localStorage
-    const savedCategories = localStorage.getItem("gang-boyz-categories")
-    if (savedCategories) {
-      const categories = JSON.parse(savedCategories)
-      const allProducts = categories.flatMap((category: any) => category.products)
-      setProducts(allProducts)
-    }
-  }, [])
-
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (product: CardProduct) => {
     addItem({
       id: Number(product.id),
       name: product.name,
@@ -42,7 +32,7 @@ export function ProductShowcase() {
         </div>
 
         {products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
               <ProductCard
                 key={product.id}
@@ -50,6 +40,10 @@ export function ProductShowcase() {
                 onAddToCart={handleAddToCart}
               />
             ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <p className="text-gray-500 text-lg">Nenhum produto encontrado</p>
           </div>
         )}
       </div>

@@ -6,7 +6,7 @@ import { useCart } from "@/lib/cart-context"
 
 export default function TestProductsPage() {
   const { cardProducts, getCardProductsByCategory } = useCards()
-  const { addToCart } = useCart()
+  const { addItem } = useCart()
 
   const clearLocalStorage = () => {
     localStorage.removeItem("gang-boyz-card-products")
@@ -14,7 +14,13 @@ export default function TestProductsPage() {
   }
 
   const handleAddToCart = (product: any) => {
-    addToCart(product)
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: 1
+    })
   }
 
   const mangaLongaProducts = getCardProductsByCategory("Manga Longa")
@@ -34,7 +40,7 @@ export default function TestProductsPage() {
       
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-4">Total de Produtos: {cardProducts.length}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {cardProducts.map((product) => (
             <div key={product.id} className="bg-gray-800 p-4 rounded">
               <p><strong>ID:</strong> {product.id}</p>
@@ -48,7 +54,7 @@ export default function TestProductsPage() {
 
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-4">Manga Longa: {mangaLongaProducts.length}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {mangaLongaProducts.map((product) => (
             <ProductCard
               key={product.id}
@@ -61,7 +67,7 @@ export default function TestProductsPage() {
 
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-4">Manga Curta: {mangaCurtaProducts.length}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {mangaCurtaProducts.map((product) => (
             <ProductCard
               key={product.id}

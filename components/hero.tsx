@@ -1,93 +1,140 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { HeroCarousel } from "@/components/hero-carousel"
+import { useBanner, BannerData } from "@/hooks/use-banner"
 
-interface Banner {
-  id: string
-  name: string
-  description: string
-  currentImage: string
-  mediaType: 'image' | 'video' | 'gif'
-  dimensions: string
-  format: string
-  position: string
-  cropMetadata?: any
+interface HeroProps {
+  onEditBannerImage?: (bannerId: string) => void
 }
 
-export function Hero() {
+export function Hero({ onEditBannerImage }: HeroProps) {
   const [heroBanners, setHeroBanners] = useState<Array<{
     id: string
     imageSrc: string
     alt: string
-  }>>([
-    {
-      id: "hero-banner-1",
-      imageSrc: "/banner-hero-1.svg",
-      alt: "Gang BoyZ Hero Banner 1"
+  }>>([])
+
+  // Function to detect if we're on mobile
+  const isMobileDevice = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 768 || 
+             /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
-  ])
+    return false;
+  }, []);
+
+  // Function to get the appropriate image for the current device
+  const getDeviceSpecificImage = useCallback((banner: BannerData) => {
+    const isMobile = isMobileDevice();
+    
+    // If we have device-specific images, use them
+    if (isMobile && banner.mobileImage) {
+      return banner.mobileImage;
+    } else if (!isMobile && banner.desktopImage) {
+      return banner.desktopImage;
+    }
+    
+    // Fallback to currentImage if device-specific images don't exist
+    return banner.currentImage;
+  }, [isMobileDevice]);
+
+  // Hooks para banners locais
+  const heroBanner1 = useBanner('hero-banner-1')
+  const heroBanner2 = useBanner('hero-banner-2')
 
   // Carregar banners do localStorage
   useEffect(() => {
     const loadBanners = () => {
-      const savedBanners = localStorage.getItem("gang-boyz-homepage-banners")
-      if (savedBanners) {
-        try {
-          const banners: Banner[] = JSON.parse(savedBanners)
-          
-          // Converter banners hero para formato do carrossel
-          const heroBanner1 = banners.find(banner => banner.id === "hero-banner-1")
-          const heroBanner2 = banners.find(banner => banner.id === "hero-banner-2")
-          
-          const formattedBanners = []
-          if (heroBanner1) {
-            formattedBanners.push({
-              id: heroBanner1.id,
-              imageSrc: heroBanner1.currentImage || "/banner-hero-1.svg",
-              alt: heroBanner1.name || "Gang BoyZ Hero Banner 1"
-            })
-          }
-          if (heroBanner2) {
-            formattedBanners.push({
-              id: heroBanner2.id,
-              imageSrc: heroBanner2.currentImage || "/banner-hero-2.svg",
-              alt: heroBanner2.name || "Gang BoyZ Hero Banner 2"
-            })
-          }
-          
-          if (formattedBanners.length > 0) {
-            setHeroBanners(formattedBanners)
-          }
-        } catch (error) {
-          console.error("Erro ao carregar banners:", error)
-        }
+      const localBanners = []
+      
+      // Carregar banner 1
+      if (heroBanner1.banner) {
+        // Get device-specific image
+        const deviceImage = getDeviceSpecificImage(heroBanner1.banner);
+        // Check if the image is a data URL (base64) - don't add cache buster
+        const banner1Src = deviceImage.startsWith('data:') 
+          ? deviceImage 
+          : `${deviceImage}?v=${Date.now()}`
+        console.log('Hero banner 1 data:', heroBanner1.banner, 'Image src:', banner1Src)
+        localBanners.push({
+          id: "hero-banner-1",
+          imageSrc: banner1Src,
+          alt: heroBanner1.banner.name || "Gang BoyZ Hero Banner 1"
+        })
+      } else {
+        // Adicionar banner padrão se não houver dados
+        localBanners.push({
+          id: "hero-banner-1",
+          imageSrc: "/placeholder-default.svg",
+          alt: "Gang BoyZ Hero Banner 1 (Padrão)"
+        })
       }
+      
+      // Carregar banner 2
+      if (heroBanner2.banner) {
+        // Get device-specific image
+        const deviceImage = getDeviceSpecificImage(heroBanner2.banner);
+        // Check if the image is a data URL (base64) - don't add cache buster
+        const banner2Src = deviceImage.startsWith('data:') 
+          ? deviceImage 
+          : `${deviceImage}?v=${Date.now()}`
+        console.log('Hero banner 2 data:', heroBanner2.banner, 'Image src:', banner2Src)
+        localBanners.push({
+          id: "hero-banner-2", 
+          imageSrc: banner2Src,
+          alt: heroBanner2.banner.name || "Gang BoyZ Hero Banner 2"
+        })
+      } else {
+        // Adicionar banner padrão se não houver dados
+        localBanners.push({
+          id: "hero-banner-2",
+          imageSrc: "/placeholder-default.svg",
+          alt: "Gang BoyZ Hero Banner 2 (Padrão)"
+        })
+      }
+
+      console.log('Using local banners:', localBanners)
+      setHeroBanners(localBanners)
     }
 
     // Carregar inicialmente
     loadBanners()
 
-    // Escutar mudanças no localStorage
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "gang-boyz-homepage-banners") {
-        loadBanners()
-      }
-    }
-
-    // Escutar mudanças customizadas (quando a mesma aba modifica)
-    const handleCustomStorageChange = () => {
+    // Escutar atualizações de sincronização
+    const handleBannerSyncUpdate = (event: CustomEvent) => {
+      console.log('🔄 Atualização de sincronização recebida:', event.detail)
       loadBanners()
     }
 
-    window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('bannerUpdated', handleCustomStorageChange)
+    // Escutar atualizações específicas da homepage
+    const handleHomepageBannerUpdate = (event: CustomEvent) => {
+      console.log('🏠 Atualização de banner da homepage:', event.detail)
+      // Add a small delay to ensure localStorage is updated
+      setTimeout(() => {
+        loadBanners()
+      }, 100)
+    }
+
+    // Escutar sincronização forçada
+    const handleForceSync = (event: CustomEvent) => {
+      console.log('🔄 Sincronização forçada recebida:', event.detail)
+      loadBanners()
+    }
+
+    // Escutar eventos de sincronização
+    window.addEventListener('bannerSyncUpdate', handleBannerSyncUpdate as EventListener)
+    window.addEventListener('homepageBannerUpdate', handleHomepageBannerUpdate as EventListener)
+    window.addEventListener('forceBannerSync', handleForceSync as EventListener)
+    window.addEventListener('bannerUpdated', handleHomepageBannerUpdate as EventListener)
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('bannerUpdated', handleCustomStorageChange)
+      window.removeEventListener('bannerSyncUpdate', handleBannerSyncUpdate as EventListener)
+      window.removeEventListener('homepageBannerUpdate', handleHomepageBannerUpdate as EventListener)
+      window.removeEventListener('forceBannerSync', handleForceSync as EventListener)
+      window.removeEventListener('bannerUpdated', handleHomepageBannerUpdate as EventListener)
     }
-  }, [])
+  }, [heroBanner1.banner, heroBanner2.banner, heroBanner1.loading, heroBanner2.loading])
 
-  return <HeroCarousel banners={heroBanners} autoPlayInterval={5000} />
+  return <HeroCarousel banners={heroBanners} autoPlayInterval={5000} onEditBannerImage={onEditBannerImage} />
 }

@@ -23,16 +23,6 @@ const demoBanners = [
     position: "Background da seção hero (abaixo da faixa de aviso)"
   },
   {
-    id: "hot-banner",
-    name: "Banner HOT",
-    description: "Banner da seção HOT, exibido acima dos produtos mais vendidos",
-    currentImage: "/banner-hero.svg",
-    mediaType: "image",
-    dimensions: "1920x650px (≈2.95:1) - Otimizado para seção HOT",
-    format: "JPG, PNG, WebP, MP4, GIF",
-    position: "Seção HOT (abaixo do header)"
-  },
-  {
     id: "footer-banner",
     name: "Banner Footer",
     description: "Banner que aparece antes do footer em todas as páginas",

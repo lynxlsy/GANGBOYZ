@@ -92,7 +92,7 @@ export function AdminProductFilters({ category, subcategory, onFilterChange }: A
                 type="checkbox" 
                 checked={filters.labels.promocao}
                 onChange={() => handleLabelFilter('promocao')}
-                className="w-4 h-4 bg-gray-900 border border-gray-600 text-red-500 focus:ring-red-500 focus:ring-2 rounded" 
+                className="w-4 h-4 bg-gray-900 border border-gray-600 red-text focus:ring-red-500 focus:ring-2 rounded" 
               />
               <span className="text-white group-hover:text-red-400 transition-colors duration-200">Promoção</span>
               <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -102,7 +102,7 @@ export function AdminProductFilters({ category, subcategory, onFilterChange }: A
                 type="checkbox" 
                 checked={filters.labels.esgotado}
                 onChange={() => handleLabelFilter('esgotado')}
-                className="w-4 h-4 bg-gray-900 border border-gray-600 text-red-500 focus:ring-red-500 focus:ring-2 rounded" 
+                className="w-4 h-4 bg-gray-900 border border-gray-600 red-text focus:ring-red-500 focus:ring-2 rounded" 
               />
               <span className="text-white group-hover:text-red-400 transition-colors duration-200">Esgotado</span>
               <div className="w-3 h-3 rounded-full bg-gray-600"></div>
@@ -112,7 +112,7 @@ export function AdminProductFilters({ category, subcategory, onFilterChange }: A
                 type="checkbox" 
                 checked={filters.labels.personalizada}
                 onChange={() => handleLabelFilter('personalizada')}
-                className="w-4 h-4 bg-gray-900 border border-gray-600 text-red-500 focus:ring-red-500 focus:ring-2 rounded" 
+                className="w-4 h-4 bg-gray-900 border border-gray-600 red-text focus:ring-red-500 focus:ring-2 rounded" 
               />
               <span className="text-white group-hover:text-red-400 transition-colors duration-200">Personalizada</span>
               <div className="w-3 h-3 rounded-full bg-blue-500"></div>
@@ -122,7 +122,7 @@ export function AdminProductFilters({ category, subcategory, onFilterChange }: A
                 type="checkbox" 
                 checked={filters.labels.semEtiqueta}
                 onChange={() => handleLabelFilter('semEtiqueta')}
-                className="w-4 h-4 bg-gray-900 border border-gray-600 text-red-500 focus:ring-red-500 focus:ring-2 rounded" 
+                className="w-4 h-4 bg-gray-900 border border-gray-600 red-text focus:ring-red-500 focus:ring-2 rounded" 
               />
               <span className="text-white group-hover:text-red-400 transition-colors duration-200">Sem Etiqueta</span>
               <div className="w-3 h-3 rounded-full bg-gray-400"></div>
@@ -135,15 +135,15 @@ export function AdminProductFilters({ category, subcategory, onFilterChange }: A
           <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Status</h3>
           <div className="space-y-3">
             <label className="flex items-center gap-3 cursor-pointer group">
-              <input type="checkbox" className="w-4 h-4 bg-gray-900 border border-gray-600 text-red-500 focus:ring-red-500 focus:ring-2 rounded" />
+              <input type="checkbox" className="w-4 h-4 bg-gray-900 border border-gray-600 red-text focus:ring-red-500 focus:ring-2 rounded" />
               <span className="text-white group-hover:text-red-400 transition-colors duration-200">Ativos</span>
             </label>
             <label className="flex items-center gap-3 cursor-pointer group">
-              <input type="checkbox" className="w-4 h-4 bg-gray-900 border border-gray-600 text-red-500 focus:ring-red-500 focus:ring-2 rounded" />
+              <input type="checkbox" className="w-4 h-4 bg-gray-900 border border-gray-600 red-text focus:ring-red-500 focus:ring-2 rounded" />
               <span className="text-white group-hover:text-red-400 transition-colors duration-200">Inativos</span>
             </label>
             <label className="flex items-center gap-3 cursor-pointer group">
-              <input type="checkbox" className="w-4 h-4 bg-gray-900 border border-gray-600 text-red-500 focus:ring-red-500 focus:ring-2 rounded" />
+              <input type="checkbox" className="w-4 h-4 bg-gray-900 border border-gray-600 red-text focus:ring-red-500 focus:ring-2 rounded" />
               <span className="text-white group-hover:text-red-400 transition-colors duration-200">Todos</span>
             </label>
           </div>

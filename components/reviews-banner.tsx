@@ -111,7 +111,7 @@ export function ReviewsBanner() {
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             VEJA O QUE OS CLIENTES DIZEM
           </h2>
-          <div className="w-32 h-1 bg-red-600 mx-auto rounded"></div>
+          <div className="w-32 h-1 red-bg mx-auto rounded"></div>
         </div>
 
         {/* Review em destaque com layout organizado */}

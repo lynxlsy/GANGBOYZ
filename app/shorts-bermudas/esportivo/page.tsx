@@ -6,5 +6,9 @@ import { getCategoryConfig } from "@/lib/category-config"
 export default function ShortsBermudasEsportivoPage() {
   const config = getCategoryConfig('esportivo')
   
-  return <ProductCategoryPage config={config} subcategoryKey="esportivo" />
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <ProductCategoryPage config={config} subcategoryKey="esportivo" />
+    </div>
+  )
 }

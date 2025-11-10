@@ -1,18 +1,25 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Product } from "@/lib/demo-products"
+import { Product } from "@/lib/products-context-simple"
 import { Upload, X, Plus } from "lucide-react"
+import { generateID } from "@/lib/unified-id-system"
+import { eventManager } from "@/lib/event-manager"
 
 interface AdminProductFormProps {
-  onSave: (product: Omit<Product, "id">) => void
+  onSave: (product: Product) => void
   onCancel: () => void
   initialData?: Partial<Product>
+}
+
+// Adicionando interface para estoque por tamanho
+interface SizeStock {
+  [size: string]: number
 }
 
 const AVAILABLE_CATEGORIES = [
@@ -45,28 +52,63 @@ const AVAILABLE_SIZES = [
 
 export function AdminProductForm({ onSave, onCancel, initialData }: AdminProductFormProps) {
   const [formData, setFormData] = useState({
+    id: initialData?.id || generateID("product"),
     name: initialData?.name || "",
     price: initialData?.price || 0,
     originalPrice: initialData?.originalPrice || 0,
-    image: initialData?.image || "",
+    stock: initialData?.stock || 0,
+    image: initialData?.image || "/placeholder-default.svg",
+    color: initialData?.color || "",
+    material: initialData?.material || "",
+    weight: initialData?.weight || "",
+    dimensions: initialData?.dimensions || "",
+    origin: initialData?.origin || "",
+    care: initialData?.care || "",
+    warranty: initialData?.warranty || "",
+    brand: initialData?.brand || "",
+    description: initialData?.description || "",
+    installments: initialData?.installments || "",
+    sizes: initialData?.sizes || [] as string[],
+    categories: initialData?.categories || [] as string[],
     isNew: initialData?.isNew || false,
     isPromotion: initialData?.isPromotion || false,
-    installments: initialData?.installments || "",
-    brand: initialData?.brand || "Gang Boyz",
-    sizes: initialData?.sizes || [],
-    color: initialData?.color || "",
-    categories: initialData?.categories || [],
-    discountPercentage: initialData?.discountPercentage || 0,
-    stock: initialData?.stock || 0
+    status: initialData?.status || "ativo" as "ativo" | "inativo",
+    sizeStock: initialData?.sizeStock || {} as Record<string, number>,
+    discountPercentage: initialData?.discountPercentage || undefined,
+    rating: initialData?.rating || undefined,
+    reviews: initialData?.reviews || undefined,
+    freeShippingText: initialData?.freeShippingText || "",
+    freeShippingThreshold: initialData?.freeShippingThreshold || "",
+    pickupText: initialData?.pickupText || "",
+    pickupStatus: initialData?.pickupStatus || "",
+    availableUnits: initialData?.availableUnits || undefined,
+    availableSizes: initialData?.availableSizes || undefined,
+    recommendationCategory: initialData?.recommendationCategory || "",
+    destacarEmRecomendacoes: initialData?.destacarEmRecomendacoes || false,
+    destacarEmOfertas: initialData?.destacarEmOfertas || false,
+    destacarEmAlta: initialData?.destacarEmAlta || false,
+    destacarLancamentos: initialData?.destacarLancamentos || false,
+    label: initialData?.label || "",
+    labelType: initialData?.labelType || ""
   })
-
-  const [selectedSizes, setSelectedSizes] = useState<string[]>(formData.sizes)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(formData.categories)
+  const [selectedSizes, setSelectedSizes] = useState<string[]>(initialData?.sizes || [])
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(initialData?.categories || [])
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
+    }))
+  }
+
+  // Função para atualizar estoque por tamanho
+  const handleSizeStockChange = (size: string, stock: number) => {
+    setFormData(prev => ({
+      ...prev,
+      sizeStock: {
+        ...prev.sizeStock,
+        [size]: stock
+      }
     }))
   }
 
@@ -76,10 +118,23 @@ export function AdminProductForm({ onSave, onCancel, initialData }: AdminProduct
         ? prev.filter(s => s !== size)
         : [...prev, size]
       
-      setFormData(prevData => ({
-        ...prevData,
-        sizes: newSizes
-      }))
+      // Se remover um tamanho, também remove o estoque associado
+      if (!newSizes.includes(size)) {
+        setFormData(prevData => {
+          const newSizeStock = { ...prevData.sizeStock }
+          delete newSizeStock[size]
+          return {
+            ...prevData,
+            sizes: newSizes,
+            sizeStock: newSizeStock
+          }
+        })
+      } else {
+        setFormData(prevData => ({
+          ...prevData,
+          sizes: newSizes
+        }))
+      }
       
       return newSizes
     })
@@ -103,31 +158,23 @@ export function AdminProductForm({ onSave, onCancel, initialData }: AdminProduct
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.name || !formData.price || !formData.image) {
+    // Validate required fields
+    if (!formData.name || !formData.price || !formData.image || selectedSizes.length === 0) {
       alert("Por favor, preencha todos os campos obrigatórios.")
       return
     }
-
-    if (selectedSizes.length === 0) {
-      alert("Selecione pelo menos um tamanho.")
-      return
-    }
-
-    if (selectedCategories.length === 0) {
-      alert("Selecione pelo menos uma categoria.")
-      return
-    }
-
-    if (!formData.color) {
-      alert("Selecione uma cor.")
-      return
-    }
-
-    onSave({
+    
+    // Create the product object
+    const productToSave: Product = {
       ...formData,
       sizes: selectedSizes,
       categories: selectedCategories
-    })
+    }
+
+    onSave(productToSave)
+    
+    // Emitir evento para atualizar produtos em todas as páginas
+    eventManager.emitThrottled('testProductCreated');
   }
 
   return (
@@ -139,6 +186,22 @@ export function AdminProductForm({ onSave, onCancel, initialData }: AdminProduct
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* ID do Produto */}
+          <div className="space-y-2">
+            <Label htmlFor="id">ID do Produto</Label>
+            <div className="relative">
+              <Input
+                id="id"
+                value={formData.id}
+                readOnly
+                className="bg-gray-50 border-gray-300 text-gray-700 placeholder-gray-400 rounded-xl h-11"
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                <span className="text-xs text-gray-500">Gerado automaticamente</span>
+              </div>
+            </div>
+          </div>
+
           {/* Informações Básicas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
@@ -161,6 +224,22 @@ export function AdminProductForm({ onSave, onCancel, initialData }: AdminProduct
                 placeholder="Gang Boyz"
               />
             </div>
+          </div>
+
+          {/* Descrição */}
+          <div className="space-y-2">
+            <Label htmlFor="description">Descrição do Produto</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => handleInputChange("description", e.target.value)}
+              placeholder="Descreva o produto, suas características, benefícios..."
+              rows={4}
+              className="resize-none"
+            />
+            <p className="text-sm text-gray-500">
+              Esta descrição aparecerá na página de detalhes do produto
+            </p>
           </div>
 
           {/* Preços */}
@@ -201,18 +280,51 @@ export function AdminProductForm({ onSave, onCancel, initialData }: AdminProduct
             </div>
           </div>
 
-          {/* Estoque */}
-          <div className="space-y-2">
-            <Label htmlFor="stock">Quantidade em Estoque</Label>
-            <Input
-              id="stock"
-              type="number"
-              min="0"
-              value={formData.stock}
-              onChange={(e) => handleInputChange("stock", parseInt(e.target.value) || 0)}
-              placeholder="50"
-            />
-            <p className="text-sm text-gray-400">Digite a quantidade disponível deste produto (opcional)</p>
+          {/* Estoque e Avaliações */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="stock">Estoque *</Label>
+              <Input
+                id="stock"
+                type="number"
+                min="0"
+                value={formData.stock}
+                onChange={(e) => handleInputChange("stock", parseInt(e.target.value) || 0)}
+                placeholder="10"
+                required
+              />
+              <p className="text-sm text-gray-400">Quantidade disponível (opcional)</p>
+            </div>
+
+            {/* Removendo campos de avaliações
+            <div className="space-y-2">
+              <Label htmlFor="rating">Avaliação (0-5)</Label>
+              <Input
+                id="rating"
+                type="number"
+                min="0"
+                max="5"
+                step="0.1"
+                value={formData.rating}
+                onChange={(e) => handleInputChange("rating", parseFloat(e.target.value) || 0)}
+                placeholder="4.5"
+              />
+              <p className="text-sm text-gray-400">Nota média do produto</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="reviews">Número de Avaliações</Label>
+              <Input
+                id="reviews"
+                type="number"
+                min="0"
+                value={formData.reviews}
+                onChange={(e) => handleInputChange("reviews", parseInt(e.target.value) || 0)}
+                placeholder="25"
+              />
+              <p className="text-sm text-gray-400">Total de avaliações</p>
+            </div>
+            */}
           </div>
 
           {/* Imagem */}
@@ -259,16 +371,58 @@ export function AdminProductForm({ onSave, onCancel, initialData }: AdminProduct
             </p>
           </div>
 
-          {/* Cor */}
+          {/* Estoque por tamanho */}
+          {selectedSizes.length > 0 && (
+            <div className="space-y-2">
+              <Label>Estoque por Tamanho</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {selectedSizes.map((size) => (
+                  <div key={size} className="flex items-center gap-2">
+                    <span className="w-12 text-sm font-medium text-gray-700">{size}:</span>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={formData.sizeStock[size] || 0}
+                      onChange={(e) => handleSizeStockChange(size, parseInt(e.target.value) || 0)}
+                      className="w-20"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Categorias */}
           <div className="space-y-2">
-            <Label>Cor *</Label>
-            <div className="grid grid-cols-5 gap-2">
+            <Label>Categorias</Label>
+            <div className="flex flex-wrap gap-2">
+              {AVAILABLE_CATEGORIES.map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => handleCategoryToggle(category)}
+                  className={`px-3 py-1 text-sm rounded-full border transition-colors ${
+                    selectedCategories.includes(category)
+                      ? "bg-blue-500 text-white border-blue-500"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Cores */}
+          <div className="space-y-2">
+            <Label>Cor</Label>
+            <div className="flex flex-wrap gap-2">
               {AVAILABLE_COLORS.map((color) => (
                 <button
                   key={color}
                   type="button"
                   onClick={() => handleInputChange("color", color)}
-                  className={`px-3 py-2 text-sm rounded border transition-colors ${
+                  className={`px-3 py-1 text-sm rounded-full border transition-colors ${
                     formData.color === color
                       ? "bg-blue-500 text-white border-blue-500"
                       : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
@@ -280,57 +434,130 @@ export function AdminProductForm({ onSave, onCancel, initialData }: AdminProduct
             </div>
           </div>
 
-          {/* Categorias */}
-          <div className="space-y-2">
-            <Label>Categorias *</Label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {AVAILABLE_CATEGORIES.map((category) => (
-                <button
-                  key={category}
-                  type="button"
-                  onClick={() => handleCategoryToggle(category)}
-                  className={`px-3 py-2 text-sm rounded border transition-colors ${
-                    selectedCategories.includes(category)
-                      ? "bg-green-500 text-white border-green-500"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
+          {/* Informações Adicionais */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="material">Material</Label>
+              <Input
+                id="material"
+                value={formData.material}
+                onChange={(e) => handleInputChange("material", e.target.value)}
+                placeholder="100% Algodão"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="weight">Peso</Label>
+              <Input
+                id="weight"
+                value={formData.weight}
+                onChange={(e) => handleInputChange("weight", e.target.value)}
+                placeholder="300g"
+              />
             </div>
           </div>
 
-          {/* Status do Produto */}
-          <div className="flex gap-6">
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={formData.isNew}
-                onChange={(e) => handleInputChange("isNew", e.target.checked)}
-                className="rounded"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="dimensions">Dimensões</Label>
+              <Input
+                id="dimensions"
+                value={formData.dimensions}
+                onChange={(e) => handleInputChange("dimensions", e.target.value)}
+                placeholder="70cm x 50cm"
               />
-              <span className="text-sm">Produto Novo</span>
-            </label>
+            </div>
 
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={formData.isPromotion}
-                onChange={(e) => handleInputChange("isPromotion", e.target.checked)}
-                className="rounded"
+            <div className="space-y-2">
+              <Label htmlFor="origin">Origem</Label>
+              <Input
+                id="origin"
+                value={formData.origin}
+                onChange={(e) => handleInputChange("origin", e.target.value)}
+                placeholder="Brasil"
               />
-              <span className="text-sm">Em Promoção</span>
-            </label>
+            </div>
           </div>
 
-          {/* Botões */}
-          <div className="flex gap-4 justify-end">
+          <div className="space-y-2">
+            <Label htmlFor="care">Instruções de Cuidado</Label>
+            <Input
+              id="care"
+              value={formData.care}
+              onChange={(e) => handleInputChange("care", e.target.value)}
+              placeholder="Lavar à mão, não alvejar"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="warranty">Garantia</Label>
+            <Input
+              id="warranty"
+              value={formData.warranty}
+              onChange={(e) => handleInputChange("warranty", e.target.value)}
+              placeholder="90 dias contra defeitos"
+            />
+          </div>
+
+          {/* Destaques */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Destaques</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center space-x-2">
+                <input
+                  id="isNew"
+                  type="checkbox"
+                  checked={formData.isNew}
+                  onChange={(e) => handleInputChange("isNew", e.target.checked)}
+                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <Label htmlFor="isNew">Novo Lançamento</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  id="isPromotion"
+                  type="checkbox"
+                  checked={formData.isPromotion}
+                  onChange={(e) => handleInputChange("isPromotion", e.target.checked)}
+                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <Label htmlFor="isPromotion">Em Promoção</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  id="destacarEmRecomendacoes"
+                  type="checkbox"
+                  checked={formData.destacarEmRecomendacoes}
+                  onChange={(e) => handleInputChange("destacarEmRecomendacoes", e.target.checked)}
+                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <Label htmlFor="destacarEmRecomendacoes">Destacar em Recomendações</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  id="destacarEmAlta"
+                  type="checkbox"
+                  checked={formData.destacarEmAlta}
+                  onChange={(e) => handleInputChange("destacarEmAlta", e.target.checked)}
+                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <Label htmlFor="destacarEmAlta">Destacar em "Em Alta"</Label>
+              </div>
+            </div>
+          </div>
+
+          {/* Botões de Ação */}
+          <div className="flex justify-end space-x-3 pt-4">
             <Button type="button" variant="outline" onClick={onCancel}>
+              <X className="h-4 w-4 mr-2" />
               Cancelar
             </Button>
             <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-              Salvar Produto
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar Produto
             </Button>
           </div>
         </form>

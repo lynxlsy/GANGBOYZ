@@ -6,5 +6,9 @@ import { getCategoryConfig } from "@/lib/category-config"
 export default function ShortsBermudasPraiaPage() {
   const config = getCategoryConfig('praia')
   
-  return <ProductCategoryPage config={config} subcategoryKey="praia" />
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <ProductCategoryPage config={config} subcategoryKey="praia" />
+    </div>
+  )
 }

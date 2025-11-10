@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Banners</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: white;
+        }
+        .banner-test {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background-color: #2a2a2a;
+        }
+        .banner-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #ff1744;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #d50000;
+        }
+        input[type="text"] {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: white;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste de Banners</h1>
+    
+    <div class="banner-test">
+        <h2>Banner de Teste</h2>
+        <input type="text" id="imageUrl" placeholder="Cole a URL da imagem aqui" />
+        <button onclick="loadImage()">Carregar Imagem</button>
+        <button onclick="testLocalStorage()">Testar localStorage</button>
+        <button onclick="clearBanners()">Limpar Banners</button>
+        <br><br>
+        <img id="testImage" class="banner-image" style="display: none;" />
+        <div id="output"></div>
+    </div>
+
+    <script>
+        function loadImage() {
+            const url = document.getElementById('imageUrl').value;
+            const img = document.getElementById('testImage');
+            const output = document.getElementById('output');
+            
+            if (!url) {
+                output.innerHTML = '<p style="color: red;">Por favor, insira uma URL</p>';
+                return;
+            }
+            
+            img.onload = function() {
+                img.style.display = 'block';
+                output.innerHTML = `<p style="color: green;">Imagem carregada com sucesso! Dimensões: ${img.naturalWidth}x${img.naturalHeight}</p>`;
+            };
+            
+            img.onerror = function() {
+                img.style.display = 'none';
+                output.innerHTML = '<p style="color: red;">Erro ao carregar a imagem</p>';
+            };
+            
+            img.src = url;
+        }
+        
+        function testLocalStorage() {
+            const output = document.getElementById('output');
+            try {
+                const keys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    keys.push(localStorage.key(i));
+                }
+                
+                const bannerKeys = keys.filter(key => key.includes('banner'));
+                let html = '<h3>Chaves de Banner no localStorage:</h3><ul>';
+                
+                bannerKeys.forEach(key => {
+                    const data = localStorage.getItem(key);
+                    html += `<li><strong>${key}</strong>: ${data ? data.length : 0} caracteres</li>`;
+                    
+                    if (data) {
+                        try {
+                            const parsed = JSON.parse(data);
+                            if (Array.isArray(parsed)) {
+                                html += `<ul>`;
+                                parsed.forEach((banner, index) => {
+                                    html += `<li>Banner ${index}: ${banner.id} - ${banner.name}</li>`;
+                                });
+                                html += `</ul>`;
+                            }
+                        } catch (e) {
+                            html += `<p>Erro ao parsear: ${e.message}</p>`;
+                        }
+                    }
+                });
+                
+                html += '</ul>';
+                output.innerHTML = html;
+            } catch (error) {
+                output.innerHTML = `<p style="color: red;">Erro ao acessar localStorage: ${error.message}</p>`;
+            }
+        }
+        
+        function clearBanners() {
+            const output = document.getElementById('output');
+            try {
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.includes('banner')) {
+                        keysToRemove.push(key);
+                    }
+                }
+                
+                keysToRemove.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                
+                output.innerHTML = `<p style="color: green;">${keysToRemove.length} chaves de banner removidas</p>`;
+            } catch (error) {
+                output.innerHTML = `<p style="color: red;">Erro ao limpar banners: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

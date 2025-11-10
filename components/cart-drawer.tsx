@@ -6,10 +6,13 @@ import { X, Plus, Minus, ShoppingBag } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export function CartDrawer() {
-  const { state, closeCart, updateQuantity, removeItem, totalPrice, totalItems } = useCart()
+  const { state, closeCart, updateQuantity, removeItem, totalPrice, totalItems, processCheckout } = useCart()
   const router = useRouter()
 
   const handleCheckout = () => {
+    // Process the checkout to update product stocks
+    processCheckout(state.items)
+    
     closeCart()
     router.push("/checkout")
   }
@@ -19,10 +22,10 @@ export function CartDrawer() {
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 z-50" onClick={closeCart} />
+      <div className="fixed inset-0 bg-black/50 z-[9999]" onClick={closeCart} />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-neutral-900 z-50 transform transition-transform duration-300 ease-in-out">
+      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-neutral-900 z-[9999] transform transition-transform duration-300 ease-in-out">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-neutral-800">

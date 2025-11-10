@@ -21,6 +21,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const applyTheme = (themeId: string) => {
+    console.log('ThemeContext: Aplicando tema', themeId)
+    
     const themes = {
       "dark-red": {
         primaryColor: "#8B0000",
@@ -39,7 +41,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
 
     const theme = themes[themeId as keyof typeof themes]
-    if (!theme) return
+    if (!theme) {
+      console.log('ThemeContext: Tema não encontrado', themeId)
+      return
+    }
+
+    console.log('ThemeContext: Tema encontrado', theme)
 
     // Aplicar variáveis CSS
     const root = document.documentElement
@@ -49,9 +56,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.style.setProperty('--gradient-to', theme.gradientTo)
     root.style.setProperty('--glow-color', theme.glowColor)
 
+    console.log('ThemeContext: Variáveis CSS aplicadas')
+
     // Salvar tema ativo
     localStorage.setItem("gang-boyz-active-theme", themeId)
     setActiveTheme(themeId)
+
+    // Disparar evento para notificar outros componentes
+    window.dispatchEvent(new CustomEvent('themeChanged', { 
+      detail: { themeId, theme } 
+    }))
+    
+    console.log('ThemeContext: Evento themeChanged disparado')
   }
 
   return (

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ShoppingCart, Heart, Eye } from 'lucide-react'
+import { ShoppingCart, Heart, Eye, CreditCard } from 'lucide-react'
 import { BannerRenderer } from '@/components/banner-renderer'
 import { useBanner, BannerBroadcastChannel } from '@/hooks/use-banners'
 
@@ -101,7 +101,7 @@ export function HotSection() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {hotProducts.map((product) => (
                 <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 bg-white">
                   <CardContent className="p-0">
@@ -151,8 +151,8 @@ export function HotSection() {
                       </div>
                       
                       <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white">
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        Adicionar ao Carrinho
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Compre agora
                       </Button>
                     </div>
                   </CardContent>

@@ -2,61 +2,47 @@
 
 import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
-import { FooterV2 } from "@/components/footer-v2"
+import { Footer } from "@/components/footer"
 import { ProductTemplate } from "@/components/product-template"
-import { ProductFilters } from "@/components/product-filters"
-import { DemoBanner } from "@/components/demo-banner"
 import { useProducts } from "@/lib/products-context-simple"
 import { useCart } from "@/lib/cart-context"
 import { Flame } from "lucide-react"
 import Link from "next/link"
+import { eventManager } from "@/lib/event-manager"
 
 export default function EmAltaPage() {
   const { products } = useProducts()
-  const { addToCart } = useCart()
+  const { addItem } = useCart()
 
-  // Filtrar produtos marcados como "Promoção" ou com label "HOT"
+  // Filtrar produtos marcados como "Promoção" ou com label "HOT" ou destacados para "Em Alta"
   const emAlta = products.filter(product => 
     product.isPromotion === true || 
-    product.label === "HOT" || 
-    product.labelType === "promocao" ||
+    product.destacarEmAlta === true ||
     product.categories?.some(cat => cat.toLowerCase().includes("em alta"))
   )
 
   // Escutar eventos de produtos criados e carregar automaticamente
   useEffect(() => {
     const handleProductCreated = () => {
-      console.log("🔄 Produto criado detectado na página em alta")
-      // Forçar atualização do contexto
-      window.dispatchEvent(new CustomEvent('forceProductsReload'))
+      // Forçar atualização dos produtos em todas as páginas
+      eventManager.emitThrottled('forceProductsReload');
     }
 
-    // Carregar produtos automaticamente quando a página carregar
-    const loadProductsOnMount = () => {
-      console.log("🔄 Carregando produtos automaticamente na página em alta")
-      window.dispatchEvent(new CustomEvent('forceProductsReload'))
-    }
-
-    // Carregar imediatamente
-    loadProductsOnMount()
-
-    // Carregar quando a página ganhar foco (voltar da admin)
-    const handleFocus = () => {
-      console.log("🔄 Página em foco - recarregando produtos automaticamente")
-      window.dispatchEvent(new CustomEvent('forceProductsReload'))
-    }
-
-    window.addEventListener('testProductCreated', handleProductCreated)
-    window.addEventListener('focus', handleFocus)
+    eventManager.subscribe('testProductCreated', handleProductCreated)
     
     return () => {
-      window.removeEventListener('testProductCreated', handleProductCreated)
-      window.removeEventListener('focus', handleFocus)
+      eventManager.unsubscribe('testProductCreated', handleProductCreated)
     }
   }, [])
 
   const handleAddToCart = (product: any) => {
-    addToCart(product)
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: 1
+    })
   }
 
   return (
@@ -66,26 +52,18 @@ export default function EmAltaPage() {
       {/* Espaçamento para mover a faixa mais 2cm para baixo */}
       <div className="h-[180px]"></div>
       
-      {/* Faixa de Aviso - Site Demonstrativo (separada do header) */}
-      <DemoBanner />
-      
       <main className="pt-0">
         <div className="flex min-h-screen">
-          {/* Sidebar de Filtros */}
-          <div className="w-80 bg-black pt-0 ml-[40px]">
-            <ProductFilters category="Em Alta" subcategory="Promoções" />
-          </div>
-
           {/* Conteúdo Principal */}
           <div className="flex-1 bg-black">
             {/* Header da Categoria */}
             <div className="px-8 py-8">
-              <div className="mb-4">
-                <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                  <Flame className="h-8 w-8 text-red-400" />
-                  Em Alta
-                </h1>
-                <p className="text-gray-400">Produtos encontrados: {emAlta.length}</p>
+              <div className="mb-4 flex items-center">
+                <Flame className="h-8 w-8 text-red-500 mr-3" />
+                <div>
+                  <h1 className="text-3xl font-bold text-white">Em Alta</h1>
+                  <p className="text-gray-400">Produtos encontrados: {emAlta.length}</p>
+                </div>
               </div>
             </div>
 
@@ -119,7 +97,7 @@ export default function EmAltaPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
                     <div className="text-3xl font-bold text-white mb-2">{emAlta.length}</div>
-                    <div className="text-gray-400">Em Alta</div>
+                    <div className="text-gray-400">Produtos em Alta</div>
                   </div>
                   <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
                     <div className="text-3xl font-bold text-white mb-2">
@@ -131,7 +109,7 @@ export default function EmAltaPage() {
                     <div className="text-3xl font-bold text-white mb-2">
                       {emAlta.filter(p => p.isNew).length}
                     </div>
-                    <div className="text-gray-400">Lançamentos</div>
+                    <div className="text-gray-400">Novos</div>
                   </div>
                 </div>
               </div>
@@ -140,7 +118,7 @@ export default function EmAltaPage() {
         </div>
       </main>
 
-      <FooterV2 />
+      <Footer />
     </div>
   )
 }

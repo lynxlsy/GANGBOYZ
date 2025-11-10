@@ -2,6 +2,9 @@
 
 import type React from "react"
 import { createContext, useContext, useReducer, useEffect } from "react"
+// import { doc, setDoc, getDoc, onSnapshot } from "firebase/firestore"
+// import { db } from "@/lib/firebase-config"
+import { useUser } from "./user-context"
 
 export interface CartItem {
   id: number
@@ -89,6 +92,7 @@ const CartContext = createContext<{
   removeItem: (id: number) => void
   updateQuantity: (id: number, quantity: number) => void
   clearCart: () => void
+  processCheckout: (items: CartItem[]) => void
   toggleCart: () => void
   openCart: () => void
   closeCart: () => void
@@ -101,9 +105,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     items: [],
     isOpen: false,
   })
+  const { user } = useUser()
 
-  // Load cart from localStorage on mount
+  // Load cart from localStorage on mount (fallback)
   useEffect(() => {
+    // Verificar se estamos no cliente
+    if (typeof window === 'undefined') return
+    
     const savedCart = localStorage.getItem("gang-boyz-cart")
     if (savedCart) {
       const parsedCart = JSON.parse(savedCart)
@@ -113,8 +121,73 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Save cart to localStorage whenever it changes
+  // Sync cart with Firebase when user is logged in
+  // useEffect(() => {
+  //   if (!user) return
+
+  //   let isMounted = true
+  //   let unsubscribe: (() => void) | null = null
+
+  //   const connectToFirebase = async () => {
+  //     try {
+  //       const cartRef = doc(db, 'carts', user.id)
+  //       
+  //       // Listen to cart changes in Firebase
+  //       unsubscribe = onSnapshot(cartRef, (doc) => {
+  //         if (!isMounted) return
+  //         
+  //         if (doc.exists()) {
+  //           const cartData = doc.data()
+  //           if (cartData?.items) {
+  //             // Update local state with Firebase data
+  //             dispatch({ type: "CLEAR_CART" })
+  //             cartData.items.forEach((item: CartItem) => {
+  //               dispatch({ type: "ADD_ITEM", payload: item })
+  //             })
+  //           }
+  //         }
+  //       }, (error) => {
+  //         if (!isMounted) return
+  //         console.error('Erro ao escutar mudanças no carrinho:', error)
+  //       })
+  //     } catch (error) {
+  //       if (!isMounted) return
+  //       console.error('Erro ao conectar carrinho com Firebase:', error)
+  //     }
+  //   }
+
+  //   connectToFirebase()
+
+  //   return () => {
+  //     isMounted = false
+  //     if (unsubscribe) {
+  //       try {
+  //         unsubscribe()
+  //       } catch (error) {
+  //         console.error('Erro ao desconectar carrinho do Firebase:', error)
+  //       }
+  //     }
+  //   }
+  // }, [user])
+
+  // Save cart to Firebase when user is logged in
+  // useEffect(() => {
+  //   if (!user || state.items.length === 0) return
+
+  //   const cartRef = doc(db, 'carts', user.id)
+  //   setDoc(cartRef, {
+  //     items: state.items,
+  //     updatedAt: new Date()
+  //   }).catch(error => {
+  //     console.error('Erro ao salvar carrinho no Firebase:', error)
+  //   })
+  // }, [state.items, user])
+
+  // Save cart to localStorage as fallback
   useEffect(() => {
+    // Verificar se estamos no cliente
+    if (typeof window === 'undefined') return
+    
     localStorage.setItem("gang-boyz-cart", JSON.stringify(state.items))
   }, [state.items])
 
@@ -136,6 +209,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => {
     dispatch({ type: "CLEAR_CART" })
+  }
+
+  // Function to process checkout and update product stocks
+  const processCheckout = (items: CartItem[]) => {
+    // In a real implementation, this would integrate with the checkout process
+    // For now, we'll just clear the cart
+    clearCart()
+    
+    // In the future, this will call updateProductStockAfterPurchase
+    // to reduce the stock of purchased items
   }
 
   const toggleCart = () => {
@@ -162,6 +245,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         removeItem,
         updateQuantity,
         clearCart,
+        processCheckout,
         toggleCart,
         openCart,
         closeCart,

@@ -66,8 +66,6 @@ export function BannerStrip() {
           {Array.from({ length: bannerRepetitions }, (_, i) => (
             <span key={i} className="mr-16">{bannerEmoji} {bannerText} {bannerEmoji}</span>
           ))}
-          <span className="mr-16">{bannerEmoji} {bannerText} {bannerEmoji}</span>
-          <span className="mr-16">{bannerEmoji} {bannerText} {bannerEmoji}</span>
         </div>
       </div>
     </div>

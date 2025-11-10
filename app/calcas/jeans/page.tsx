@@ -6,5 +6,9 @@ import { getCategoryConfig } from "@/lib/category-config"
 export default function CalcasJeansPage() {
   const config = getCategoryConfig('jeans')
   
-  return <ProductCategoryPage config={config} subcategoryKey="jeans" />
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <ProductCategoryPage config={config} subcategoryKey="jeans" />
+    </div>
+  )
 }

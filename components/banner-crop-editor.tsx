@@ -262,7 +262,7 @@ export function BannerCropEditor({
 
         {/* Botões de Ação */}
         <div className="flex gap-2">
-          <Button onClick={handleSave} className="bg-red-600 hover:bg-red-700">
+          <Button onClick={handleSave} className="!red-bg !hover:red-bg-hover !text-white !border-red-600">
             Salvar Crop
           </Button>
           <Button variant="outline" onClick={handleReset}>

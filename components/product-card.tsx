@@ -43,6 +43,13 @@ export function ProductCard({ product, onAddToCart, className = "" }: ProductCar
             {discountPercentage}% OFF
           </div>
         )}
+        
+        {/* Badge de estoque esgotado */}
+        {product.stock === 0 && (
+          <div className="absolute top-3 left-3 bg-gray-600 text-white text-sm font-bold px-2 py-1">
+            ESGOTADO
+          </div>
+        )}
       </div>
 
       {/* Conteúdo do card */}
@@ -87,14 +94,27 @@ export function ProductCard({ product, onAddToCart, className = "" }: ProductCar
           
           {showSizes && (
             <div className="mt-2 flex flex-wrap gap-2">
-              {product.sizes.map((size) => (
-                <span
-                  key={size}
-                  className="px-2 py-1 bg-gray-100 text-gray-700 text-xs border hover:bg-gray-200 transition-colors cursor-pointer"
-                >
-                  {size}
-                </span>
-              ))}
+              {product.sizes.map((size) => {
+                // Verificar estoque para este tamanho, se disponível
+                const sizeStock = product.sizeStock?.[size]
+                const isAvailable = sizeStock === undefined || sizeStock > 0
+                
+                return (
+                  <span
+                    key={size}
+                    className={`px-2 py-1 text-xs border ${
+                      isAvailable
+                        ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    {size}
+                    {sizeStock !== undefined && (
+                      <span className="ml-1">({sizeStock})</span>
+                    )}
+                  </span>
+                )
+              })}
             </div>
           )}
         </div>
@@ -124,9 +144,14 @@ export function ProductCard({ product, onAddToCart, className = "" }: ProductCar
         {onAddToCart && (
           <button
             onClick={() => onAddToCart(product)}
-            className="w-full bg-black text-white py-2 px-4 hover:bg-gray-800 transition-colors font-medium mt-auto"
+            disabled={product.stock === 0}
+            className={`w-full py-2 px-4 transition-colors font-medium mt-auto ${
+              product.stock === 0
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-black text-white hover:bg-gray-800'
+            }`}
           >
-            Adicionar ao Carrinho
+            {product.stock === 0 ? 'Esgotado' : 'Compre agora'}
           </button>
         )}
       </div>

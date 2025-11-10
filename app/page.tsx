@@ -1,57 +1,354 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Header } from "@/components/header"
+import { useState, useEffect, useRef } from "react"
+import { HeaderCentered } from "@/components/header-centered"
 import { Hero } from "@/components/hero"
-import { BannerStrip } from "@/components/banner-strip"
-import { BannerGrid } from "@/components/banner-grid"
-import { HotSection } from "@/components/hot-section"
-import { RecommendationsSection } from "@/components/recommendations-section"
-import { ExploreCategories } from "@/components/explore-categories"
-import { FeaturedProducts } from "@/components/featured-products"
+import { CategoryShowcase } from "@/components/category-showcase"
 import { BannersShowcase } from "@/components/banners-showcase"
-import { AboutSection } from "@/components/about-section"
+import { FeaturedProducts } from "@/components/featured-products"
 import { ServicesSection } from "@/components/services-section"
-import { FooterV2 } from "@/components/footer-v2"
+import { Footer } from "@/components/footer"
+import { useEditMode } from "@/lib/edit-mode-context"
+import { useBanner } from "@/hooks/use-banner"
+import { getBannerConfig } from "@/lib/banner-config"
+import { toast } from "sonner"
+import { ImageIcon, X, Upload, Trash2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { CartDrawer } from "@/components/cart-drawer"
 import { WelcomeModal } from "@/components/welcome-modal"
 import { ScrollToTop } from "@/components/scroll-to-top"
-import { CardsShowcase } from "@/components/cards-showcase"
 import { WhatsAppButton } from "@/components/whatsapp-button"
+import { NotificationSystem } from "@/components/notification-system"
+import { CookieBanner } from "@/components/cookie-banner"
+import { EditModeControls } from "@/components/edit-mode-controls"
+import { FooterBanner } from "@/components/footer-banner-v2"
+import { HomepageBannerStrip } from "@/components/banner-strip-unified"
+import { RecommendationsSection } from "@/components/recommendations-section"
+import { HotSection } from "@/components/hot-section"
+import { OffersBanner } from "@/components/banner-renderer"
 
-export default function HomePage() {
+export default function Home() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false)
-
+  // Handle useEditMode with error handling
+  let isEditMode = false
+  try {
+    const editModeContext = useEditMode()
+    isEditMode = editModeContext.isEditMode
+  } catch (error) {
+    console.warn("Failed to initialize edit mode context:", error)
+    // Fallback to localStorage
+    if (typeof window !== 'undefined') {
+      isEditMode = localStorage.getItem('edit-mode-enabled') === 'true'
+    }
+  }
+  
+  const [showBannersPanel, setShowBannersPanel] = useState(false)
+  const [showUploadModal, setShowUploadModal] = useState(false)
+  const [currentBannerId, setCurrentBannerId] = useState("")
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  // Hooks for banner data
+  const { banner: heroBanner1, updateBanner: updateHeroBanner1 } = useBanner('hero-banner-1')
+  const { banner: heroBanner2, updateBanner: updateHeroBanner2 } = useBanner('hero-banner-2')
+  const { banner: footerBanner, updateBanner: updateFooterBanner } = useBanner('footer-banner')
+  const { banner: offersBanner, updateBanner: updateOffersBanner } = useBanner('offers-banner')
   useEffect(() => {
-    // Mostrar modal de boas-vindas apenas uma vez
+    // Verificar se estamos no cliente
+    if (typeof window === 'undefined') return
+    
+    // Verificar se o modal foi desabilitado pelo usuário
+    const modalDisabled = localStorage.getItem('welcome-modal-disabled')
     const hasSeenWelcome = localStorage.getItem('gang-boyz-welcome-seen')
+    
+    if (modalDisabled === 'true') {
+      setShowWelcomeModal(false)
+      return
+    }
+    
+    // Mostrar modal de boas-vindas apenas uma vez
     if (!hasSeenWelcome) {
       setShowWelcomeModal(true)
       localStorage.setItem('gang-boyz-welcome-seen', 'true')
     }
+    
+    // Carregar script para corrigir contraste da faixa de promoção
+    const script = document.createElement('script');
+    script.src = '/fix-banner-contrast.js';
+    script.async = true;
+    document.head.appendChild(script);
+    
+    return () => {
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+    };
   }, [])
+
+  const handleEditBannerImage = (bannerId: string) => {
+    setCurrentBannerId(bannerId)
+    setShowUploadModal(true)
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Arquivo muito grande. Máximo permitido: 5MB")
+      return
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Apenas arquivos de imagem são permitidos")
+      return
+    }
+
+    setUploading(true)
+    
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      
+      const response = await fetch('/api/uploads', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Erro no upload')
+      }
+
+      const { url } = await response.json()
+      
+      console.log('Updating banner with URL:', url, 'Banner ID:', currentBannerId)
+      
+      // Update the appropriate banner
+      switch (currentBannerId) {
+        case 'hero-banner-1':
+          console.log('Updating hero-banner-1')
+          const result1 = updateHeroBanner1({ currentImage: url })
+          console.log('Update result for hero-banner-1:', result1)
+          break
+        case 'hero-banner-2':
+          console.log('Updating hero-banner-2')
+          const result2 = updateHeroBanner2({ currentImage: url })
+          console.log('Update result for hero-banner-2:', result2)
+          break
+        case 'footer-banner':
+          console.log('Updating footer-banner')
+          updateFooterBanner({ currentImage: url })
+          break
+        case 'offers-banner':
+          console.log('Updating offers-banner')
+          updateOffersBanner({ currentImage: url })
+          break
+        default:
+          // For grid banners, we need to update the collections
+          const config = getBannerConfig(currentBannerId)
+          if (config) {
+            const savedBanners = localStorage.getItem(config.storageKey)
+            if (savedBanners) {
+              const banners = JSON.parse(savedBanners)
+              const updatedBanners = banners.map((banner: any) => 
+                banner.id === currentBannerId ? { ...banner, currentImage: url } : banner
+              )
+              localStorage.setItem(config.storageKey, JSON.stringify(updatedBanners))
+              window.dispatchEvent(new CustomEvent(config.eventName))
+            }
+          }
+          break
+      }
+      
+      toast.success("Banner atualizado com sucesso!")
+      setShowUploadModal(false)
+      
+      // Force a refresh of all banner components
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("homepageBannerUpdate"))
+      }, 100)
+    } catch (error) {
+      console.error("Erro no upload:", error)
+      toast.error("Erro ao fazer upload do banner")
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  const getBannerTitle = (bannerId: string) => {
+    switch (bannerId) {
+      case 'hero-banner-1': return "Banner Hero 1"
+      case 'hero-banner-2': return "Banner Hero 2"
+      case 'footer-banner': return "Banner Footer"
+      case 'offers-banner': return "Banner de Ofertas"
+      default: return "Banner"
+    }
+  }
+
+  const getBannerConfigInfo = (bannerId: string) => {
+    const config = getBannerConfig(bannerId)
+    return config ? `${config.dimensions} (${config.mediaTypes.join(', ')})` : ""
+  }
+
+  const getBannerCurrentImage = (bannerId: string) => {
+    let imageUrl = "/placeholder-default.svg"
+    
+    switch (bannerId) {
+      case 'hero-banner-1': 
+        imageUrl = heroBanner1?.currentImage || "/placeholder-default.svg"
+        break
+      case 'hero-banner-2': 
+        imageUrl = heroBanner2?.currentImage || "/placeholder-default.svg"
+        break
+      case 'footer-banner': 
+        imageUrl = footerBanner?.currentImage || "/placeholder-default.svg"
+        break
+      case 'offers-banner': 
+        imageUrl = offersBanner?.currentImage || "/placeholder-default.svg"
+        break
+      default: 
+        imageUrl = "/placeholder-default.svg"
+        break
+    }
+    
+    // Don't add cache buster to data URLs (base64 images)
+    if (imageUrl.startsWith('data:')) {
+      return imageUrl
+    }
+    
+    return `${imageUrl}?v=${Date.now()}`
+  }
+
+  // Banner information for the panel
+  const bannerInfo = [
+    { id: 'hero-banner-1', title: 'Hero Banner 1', description: 'Banner principal no topo da página' },
+    { id: 'hero-banner-2', title: 'Hero Banner 2', description: 'Segundo banner principal' },
+    { id: 'offers-banner', title: 'Banner de Ofertas', description: 'Banner de ofertas especiais no meio da página' },
+    { id: 'footer-banner', title: 'Banner Footer', description: 'Banner no rodapé da página' }
+  ]
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Header />
-      <main className="relative">
-        <Hero />
-        <BannerStrip />
-        <BannerGrid />
-        <ExploreCategories />
-        <RecommendationsSection />
-        <FeaturedProducts />
+      <HeaderCentered />
+      
+      {/* Edit Mode Controls */}
+      <EditModeControls />
+      
+      {/* Welcome Modal */}
+      <WelcomeModal 
+        isOpen={showWelcomeModal} 
+        onClose={() => setShowWelcomeModal(false)} 
+      />
+      
+      {/* Hidden file input */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
+        className="hidden"
+      />
+      
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-white">
+                Editar Imagem do Banner
+              </h3>
+              <button 
+                onClick={() => setShowUploadModal(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-300 mb-2">
+                  Banner: {getBannerTitle(currentBannerId)}
+                </p>
+                <p className="text-xs text-gray-400">
+                  {getBannerConfigInfo(currentBannerId)}
+                </p>
+              </div>
+              
+              <div className="flex flex-col gap-3">
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="w-full bg-red-600 text-white hover:bg-red-700 flex items-center justify-center gap-2"
+                >
+                  <Upload className="h-4 w-4" />
+                  {uploading ? "Enviando..." : "Selecionar Imagem"}
+                </Button>
+                
+                <Button
+                  onClick={() => setShowUploadModal(false)}
+                  variant="outline"
+                  className="w-full border-gray-600 text-gray-300 hover:bg-gray-800"
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <main>
+        {/* Hero Section */}
+        <Hero onEditBannerImage={handleEditBannerImage} />
+        
+        {/* Homepage Banner Strip */}
+        <HomepageBannerStrip />
+        
+        {/* Category Showcase */}
+        <CategoryShowcase />
+        
+        {/* Banners Showcase */}
         <BannersShowcase />
-        <CardsShowcase />
+        
+        {/* Recommendations Section */}
+        <RecommendationsSection />
+        
+        {/* Hot Section */}
         <HotSection />
-        <AboutSection />
-        <ServicesSection />
+        
+        {/* Offers Banner - Adding the missing offers banner */}
+        <div className="container mx-auto px-4 py-8">
+          <OffersBanner />
+        </div>
+        
+        {/* Featured Products */}
+        <FeaturedProducts />
+        
+        {/* Footer Banner - Moved above Services Section as requested */}
+        <FooterBanner />
+        
+        {/* Services Section with spacing */}
+        <div className="mt-8">
+          <ServicesSection isEditMode={isEditMode} />
+        </div>
+        
+        {/* Product Information Edit Section - Removed as per new requirements */}
+        {/* {isEditMode && <ProductInfoEditor />} */}
+        
       </main>
-      <FooterV2 />
+
+      <Footer />
       <CartDrawer />
-      <WelcomeModal isOpen={showWelcomeModal} onClose={() => setShowWelcomeModal(false)} />
       <ScrollToTop />
       <WhatsAppButton />
+      <NotificationSystem />
+      <CookieBanner />
     </div>
   )
 }

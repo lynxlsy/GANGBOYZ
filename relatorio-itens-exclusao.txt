@@ -1,0 +1,36 @@
+RELATÓRIO DE ITENS PARA EXCLUSÃO
+=====================================
+
+ITENS MARCADOS PARA EXCLUSÃO:
+-----------------------------
+1. PÁGINA: Produtos - Camisetas (/camisetas) - Página da categoria camisetas
+2. PÁGINA: Busca (/busca) - Página de busca
+3. PÁGINA: Checkout (/checkout) - Página de checkout
+4. PÁGINA: Autenticação (/auth/login) - Página de autenticação
+5. PÁGINA NÃO USADA: Debug Banners (/debug-banners) - Página de debug para banners - provavelmente apenas para desenvolvimento [Local (app/debug-banners)]
+6. PÁGINA NÃO USADA: Teste Carousel (/test-carousel) - Teste do componente carousel - apenas desenvolvimento [Local (app/test-carousel)]
+7. PÁGINA NÃO USADA: Teste Card de Produto (/test-product-card) - Teste do componente card de produto - apenas desenvolvimento [Local (app/test-product-card)]
+8. PÁGINA NÃO USADA: Limpar Armazenamento (/clear-storage) - Utilitário para limpar armazenamento do navegador - possivelmente para testes [Local (app/clear-storage)]
+9. PÁGINA NÃO USADA: Forçar Atualização (/force-refresh) - Utilitário de atualização forçada - possivelmente para testes [Local (app/force-refresh)]
+10. PÁGINA NÃO USADA: Forçar Atualização de Produtos (/force-update-products) - Utilitário de atualização forçada de produtos - possivelmente para testes [Local (app/force-update-products)]
+11. PÁGINA NÃO USADA: Teste de Imagens (/test-images) - Página de teste de imagens - apenas desenvolvimento [Local (app/test-images)]
+12. PÁGINA NÃO USADA: Teste de Carousel Simples (/test-simple-carousel) - Teste de carousel simples - apenas desenvolvimento [Local (app/test-simple-carousel)]
+13. PÁGINA NÃO USADA: Teste de Sincronização de Banners (/test-banner-sync) - Teste de sincronização de banners - apenas desenvolvimento [Local (app/test-banner-sync)]
+14. PÁGINA NÃO USADA: Teste de Todos os Cards (/test-all-cards) - Teste do componente de cards - apenas desenvolvimento [Local (app/test-all-cards)]
+15. PÁGINA NÃO USADA: Demonstração do Sistema de Banners (/banner-system-demo) - Demonstração do sistema de banners - possivelmente desatualizado [Local (app/banner-system-demo)]
+16. PÁGINA NÃO USADA: Teste de Sidebar (/test-sidebar) - Teste do componente sidebar - apenas desenvolvimento [Local (app/test-sidebar)]
+17. PÁGINA NÃO USADA: Debug de Carousel (/debug-carousel) - Debug de carousel - apenas desenvolvimento [Local (app/debug-carousel)]
+18. PÁGINA NÃO USADA: Debug de Banners Hero (/debug-hero-banners) - Debug de banners hero - apenas desenvolvimento [Local (app/debug-hero-banners)]
+19. PÁGINA NÃO USADA: Limpar Banners Hero (/clean-hero-banners) - Utilitário de limpeza de banners hero - possivelmente desatualizado [Local (app/clean-hero-banners)]
+20. ITEM FIREBASE: Debug Firebase (/debug-banners) - Debug da integração de banners com Firebase [Firebase]
+21. ITEM FIREBASE: Banners Admin Firebase (/admin/banners-firebase) - Gerenciamento de banners Firebase [Firebase]
+22. UTILITÁRIO: Forçar Inicialização (/force-init) - Inicialização forçada - apenas para desenvolvimento [Local]
+23. UTILITÁRIO: Inicializar Dados (/init-data) - Inicializar dados demo - apenas para desenvolvimento [Local]
+24. UTILITÁRIO: Teste de Banners Admin (/test-admin-banners) - Teste de banners admin - apenas desenvolvimento [Local]
+
+ITENS EM ANDAMENTO:
+------------------
+1. PÁGINA: Painel Administrativo (/admin) - Painel principal de administração
+   O que falta: colocar sicronização com firebase nos cards e nos banners fazendo que os usuarios consigam ver as imagens e produtos indepedente da região.
+
+RELATÓRIO GERADO EM: 17/10/2025, 22:26:42

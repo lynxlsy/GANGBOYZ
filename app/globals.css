@@ -4,24 +4,24 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0.05 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.05 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.05 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  --background: oklch(0.98 0 0);
+  --foreground: oklch(0.15 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0 0);
   --primary: oklch(0.577 0.245 27.325);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.15 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.15 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.95 0 0);
+  --secondary-foreground: oklch(0.15 0 0);
+  --muted: oklch(0.95 0 0);
+  --muted-foreground: oklch(0.45 0 0);
   --accent: oklch(0.577 0.245 27.325);
-  --accent-foreground: oklch(0.985 0 0);
+  --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.2 0 0);
-  --input: oklch(0.2 0 0);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.9 0 0);
+  --input: oklch(0.9 0 0);
   --ring: oklch(0.577 0.245 27.325);
   --chart-1: oklch(0.577 0.245 27.325);
   --chart-2: oklch(0.577 0.245 27.325);
@@ -44,6 +44,36 @@
   --gradient-from: #8B0000;
   --gradient-to: #4A0000;
   --glow-color: rgba(139, 0, 0, 0.2);
+}
+
+/* Ripple animation for interactive buttons */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Forçar fundo branco no editor de crop */
+[data-crop-viewport] {
+  background-color: white !important;
+}
+
+[data-crop-viewport] > div {
+  background-color: white !important;
+}
+
+.crop-viewport {
+  background-color: white !important;
 }
 
 .dark {
@@ -135,12 +165,13 @@
     overflow-x: hidden;
   }
   
-  /* Fixar altura do viewport */
-  .hero-section {
-    height: 100vh !important;
-    min-height: 100vh !important;
-    max-height: 100vh !important;
+  /* Ensure banner images maintain proper aspect ratios */
+  .hero-section img,
+  .banner-renderer img {
+    object-fit: contain !important;
   }
+  
+  /* Remove previous height constraints to allow free resizing */
 }
 
 /* Custom red accent styles */
@@ -309,4 +340,61 @@
   100% {
     transform: translateX(-100%);
   }
+}
+
+/* Forçar fundo branco no editor de crop */
+[data-crop-viewport] {
+  background-color: white !important;
+}
+
+[data-crop-viewport] > div {
+  background-color: white !important;
+}
+
+.crop-viewport {
+  background-color: white !important;
+}
+
+/* Custom animation for submenu items */
+@keyframes fadeInDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-fadeInDown {
+  animation: fadeInDown 0.3s ease-out forwards;
+}
+
+.animation-delay-0 {
+  animation-delay: 0ms;
+}
+
+.animation-delay-50 {
+  animation-delay: 50ms;
+}
+
+.animation-delay-100 {
+  animation-delay: 100ms;
+}
+
+.animation-delay-150 {
+  animation-delay: 150ms;
+}
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-250 {
+  animation-delay: 250ms;
+}
+
+.animation-delay-300 {
+  animation-delay: 300ms;
 }

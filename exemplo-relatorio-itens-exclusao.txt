@@ -1,0 +1,18 @@
+RELATÓRIO DE ITENS PARA EXCLUSÃO
+=====================================
+
+ITENS MARCADOS PARA EXCLUSÃO:
+-----------------------------
+1. PÁGINA: Homepage (/) - Página inicial principal
+2. PÁGINA NÃO USADA: Debug Banners (/debug-banners) - Página de debug para banners - desenvolvimento apenas [Local (app/debug-banners)]
+3. PÁGINA NÃO USADA: Teste Carousel (/test-carousel) - Teste do componente carousel - apenas desenvolvimento [Local (app/test-carousel)]
+
+ITENS EM ANDAMENTO:
+------------------
+1. ITEM FIREBASE: Status de Sincronização de Banners (/admin/banners) - Sincronização de banners com Firebase [Firebase]
+   O que falta: Verificar se todos os banners estão sincronizados corretamente e remover referências antigas
+
+2. UTILITÁRIO: Limpar Tudo (/admin/limpar-tudo) - Limpar todos os dados - para entrega ao cliente [Local/Firebase]
+   O que falta: Testar a funcionalidade de limpeza completa e documentar o processo
+
+RELATÓRIO GERADO EM: 17/10/2025 15:30:45

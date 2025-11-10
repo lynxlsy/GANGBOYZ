@@ -1,0 +1,42 @@
+RELATÓRIO DE ITENS PARA EXCLUSÃO - ATUALIZADO
+=====================================
+
+ITENS JÁ EXCLUÍDOS:
+-------------------
+1. ✓ PÁGINA: Busca (/busca) - Página de busca [EXCLUÍDA]
+2. ✓ PÁGINA: Checkout (/checkout) - Página de checkout [EXCLUÍDA]
+3. ✓ PÁGINA: Autenticação (/auth/login) - Página de autenticação [EXCLUÍDA]
+4. ✓ PÁGINA NÃO USADA: Debug Banners (/debug-banners) - Página de debug para banners - provavelmente apenas para desenvolvimento [Local (app/debug-banners)] [EXCLUÍDA]
+5. ✓ PÁGINA NÃO USADA: Teste Carousel (/test-carousel) - Teste do componente carousel - apenas desenvolvimento [Local (app/test-carousel)] [EXCLUÍDA]
+6. ✓ PÁGINA NÃO USADA: Teste Card de Produto (/test-product-card) - Teste do componente card de produto - apenas desenvolvimento [Local (app/test-product-card)] [EXCLUÍDA]
+7. ✓ PÁGINA NÃO USADA: Limpar Armazenamento (/clear-storage) - Utilitário para limpar armazenamento do navegador - possivelmente para testes [Local (app/clear-storage)] [EXCLUÍDA]
+8. ✓ PÁGINA NÃO USADA: Forçar Atualização (/force-refresh) - Utilitário de atualização forçada - possivelmente para testes [Local (app/force-refresh)] [EXCLUÍDA]
+9. ✓ PÁGINA NÃO USADA: Forçar Atualização de Produtos (/force-update-products) - Utilitário de atualização forçada de produtos - possivelmente para testes [Local (app/force-update-products)] [EXCLUÍDA]
+10. ✓ PÁGINA NÃO USADA: Teste de Imagens (/test-images) - Página de teste de imagens - apenas desenvolvimento [Local (app/test-images)] [EXCLUÍDA]
+11. ✓ PÁGINA NÃO USADA: Teste de Carousel Simples (/test-simple-carousel) - Teste de carousel simples - apenas desenvolvimento [Local (app/test-simple-carousel)] [EXCLUÍDA]
+12. ✓ PÁGINA NÃO USADA: Teste de Sincronização de Banners (/test-banner-sync) - Teste de sincronização de banners - apenas desenvolvimento [Local (app/test-banner-sync)] [EXCLUÍDA]
+13. ✓ PÁGINA NÃO USADA: Teste de Todos os Cards (/test-all-cards) - Teste do componente de cards - apenas desenvolvimento [Local (app/test-all-cards)] [EXCLUÍDA]
+14. ✓ PÁGINA NÃO USADA: Demonstração do Sistema de Banners (/banner-system-demo) - Demonstração do sistema de banners - possivelmente desatualizado [Local (app/banner-system-demo)] [EXCLUÍDA]
+15. ✓ PÁGINA NÃO USADA: Teste de Sidebar (/test-sidebar) - Teste do componente sidebar - apenas desenvolvimento [Local (app/test-sidebar)] [EXCLUÍDA]
+16. ✓ PÁGINA NÃO USADA: Debug de Carousel (/debug-carousel) - Debug de carousel - apenas desenvolvimento [Local (app/debug-carousel)] [EXCLUÍDA]
+17. ✓ PÁGINA NÃO USADA: Debug de Banners Hero (/debug-hero-banners) - Debug de banners hero - apenas desenvolvimento [Local (app/debug-hero-banners)] [EXCLUÍDA]
+18. ✓ PÁGINA NÃO USADA: Limpar Banners Hero (/clean-hero-banners) - Utilitário de limpeza de banners hero - possivelmente desatualizado [Local (app/clean-hero-banners)] [EXCLUÍDA]
+19. ✓ ITEM FIREBASE: Banners Admin Firebase (/admin/banners-firebase) - Gerenciamento de banners Firebase [Firebase] [EXCLUÍDA]
+20. ✓ UTILITÁRIO: Forçar Inicialização (/force-init) - Inicialização forçada - apenas para desenvolvimento [Local] [EXCLUÍDO]
+21. ✓ UTILITÁRIO: Inicializar Dados (/init-data) - Inicializar dados demo - apenas para desenvolvimento [Local] [EXCLUÍDO]
+22. ✓ UTILITÁRIO: Teste de Banners Admin (/test-admin-banners) - Teste de banners admin - apenas desenvolvimento [Local] [EXCLUÍDO]
+
+ITENS PENDENTES:
+----------------
+1. PÁGINA: Produtos - Camisetas (/camisetas) - Página da categoria camisetas
+   OBSERVAÇÃO: Esta página consiste em múltiplas subpáginas para diferentes tipos de camisetas (basica, manga-curta, etc.). Será necessário decidir se todas as subpáginas devem ser excluídas ou apenas a página principal.
+
+2. ITEM FIREBASE: Debug Firebase (/debug-banners) - Debug da integração de banners com Firebase [Firebase]
+   OBSERVAÇÃO: Esta página ainda existe e pode ser necessária para debug da integração Firebase.
+
+ITENS EM ANDAMENTO:
+------------------
+1. PÁGINA: Painel Administrativo (/admin) - Painel principal de administração
+   O que falta: colocar sicronização com firebase nos cards e nos banners fazendo que os usuarios consigam ver as imagens e produtos indepedente da região.
+
+RELATÓRIO ATUALIZADO EM: 21/10/2025, 22:45:30

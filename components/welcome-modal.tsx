@@ -1,9 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { X, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import { getContentById, updateContentById } from "@/lib/editable-content-utils"
+import { editableContentSyncService } from '@/lib/editable-content-sync';
 
 interface WelcomeModalProps {
   isOpen: boolean
@@ -19,21 +21,60 @@ export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
     description: "Descubra nossa coleção exclusiva de streetwear premium. Peças únicas que expressam sua individualidade e estilo urbano.",
     buttonText: "Explorar Loja"
   })
+  const configRef = useRef(config);
+
+  // Keep the ref updated with the latest config
+  useEffect(() => {
+    configRef.current = config;
+  }, [config]);
 
   useEffect(() => {
+    // Verificar se estamos no cliente
+    if (typeof window === 'undefined') return
+    
     if (isOpen) {
       // Carregar configuração salva
       const savedConfig = localStorage.getItem('welcome-modal-config')
       if (savedConfig) {
-        const parsedConfig = JSON.parse(savedConfig)
-        setConfig(parsedConfig)
+        try {
+          const parsedConfig = JSON.parse(savedConfig)
+          setConfig(parsedConfig)
         
-        // Verificar se o modal está desativado
-        if (!parsedConfig.enabled) {
-          onClose()
-          return
+          // Verificar se o modal está desativado
+          if (!parsedConfig.enabled) {
+            onClose()
+            return
+          }
+        } catch (error) {
+          console.error('Erro ao fazer parse da configuração:', error)
         }
       }
+      
+      // Firebase real-time listener for welcome modal config
+      const unsubscribeWelcomeModal = editableContentSyncService.listenToContentChanges("welcome-modal-config", (content) => {
+        if (content) {
+          try {
+            const parsedConfig = JSON.parse(content);
+            if (typeof parsedConfig === 'object' && parsedConfig !== null) {
+              // Ensure all required properties are present
+              const completeConfig = {
+                enabled: configRef.current.enabled,
+                displayTime: configRef.current.displayTime,
+                title: configRef.current.title,
+                description: configRef.current.description,
+                buttonText: configRef.current.buttonText,
+                ...parsedConfig
+              };
+              
+              setConfig(completeConfig);
+              // Also save to localStorage for offline access
+              localStorage.setItem('welcome-modal-config', JSON.stringify(completeConfig));
+            }
+          } catch (error) {
+            console.error('Erro ao processar configuração do modal de boas-vindas do Firebase:', error);
+          }
+        }
+      });
 
       // Check if user has disabled the modal
       const modalDisabled = localStorage.getItem('welcome-modal-disabled')
@@ -46,11 +87,21 @@ export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
         onClose()
       }, config.displayTime * 1000) // Auto close after configured time
 
-      return () => clearTimeout(timer)
+      return () => {
+        clearTimeout(timer)
+        // Clean up Firebase listener
+        unsubscribeWelcomeModal();
+      }
     }
   }, [isOpen, onClose, config.displayTime])
 
   const handleClose = () => {
+    // Verificar se estamos no cliente
+    if (typeof window === 'undefined') {
+      onClose()
+      return
+    }
+    
     if (neverShowAgain) {
       localStorage.setItem('welcome-modal-disabled', 'true')
     }
@@ -60,7 +111,7 @@ export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md">
       <div className="relative w-full max-w-lg mx-4 bg-gradient-to-br from-neutral-900/95 to-black/95 border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/50">
         {/* Close button */}
         <button
@@ -94,7 +145,7 @@ export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
               <h1 className="text-3xl md:text-4xl font-bold text-white tracking-wide">
                 {config.title}
               </h1>
-              <div className="w-16 h-1 bg-red-600 mx-auto rounded-full"></div>
+              <div className="w-16 h-1 red-bg mx-auto rounded-full"></div>
             </div>
 
             {/* Description */}
@@ -106,7 +157,7 @@ export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
             <div className="pt-4">
               <Button
                 onClick={handleClose}
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 text-base transition-all duration-300 hover:scale-105 shadow-lg shadow-red-600/25"
+                className="red-gradient hover:red-bg-hover text-white font-semibold px-8 py-3 text-base transition-all duration-300 hover:scale-105 shadow-lg red-glow"
               >
                 {config.buttonText}
               </Button>
@@ -123,7 +174,7 @@ export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
                 />
                 <div className={`w-4 h-4 border-2 rounded flex items-center justify-center transition-all duration-200 ${
                   neverShowAgain 
-                    ? 'bg-red-600 border-red-600' 
+                    ? 'red-bg red-border-dynamic' 
                     : 'border-white/40 hover:border-white/60'
                 }`}>
                   {neverShowAgain && <Check className="h-3 w-3 text-white" />}
@@ -136,7 +187,7 @@ export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
             <div className="pt-4">
               <div className="w-20 h-1 bg-white/20 rounded-full mx-auto overflow-hidden">
                 <div
-                  className="h-full bg-red-600 rounded-full"
+                  className="h-full red-bg rounded-full"
                   style={{
                     animation: `shrink ${config.displayTime}s linear forwards`,
                   }}

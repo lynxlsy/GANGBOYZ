@@ -51,7 +51,7 @@ export function ProductCardSimpleWide({ product, onAddToCart, className = "" }: 
         {/* Preço */}
         <div className="mb-1">
           <div className="flex items-center gap-2">
-            <span className="text-red-500 font-bold text-xl">
+            <span className="red-text font-bold text-xl">
               R$ {formatPrice(product.price)}
             </span>
             {product.originalPrice && product.originalPrice > product.price && (

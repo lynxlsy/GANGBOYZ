@@ -1,49 +1,78 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { BannerRenderer } from '@/components/banner-renderer'
-import { useBanner, BannerBroadcastChannel } from '@/hooks/use-banners'
 
 export function FooterBanner() {
-  const { banner, mutate } = useBanner('footer')
-  const [broadcastChannel, setBroadcastChannel] = useState<BannerBroadcastChannel | null>(null)
+  const [footerBanner, setFooterBanner] = useState<any>(null)
 
-  // Inicializar BroadcastChannel
+  // Carregar banner Footer do localStorage
   useEffect(() => {
-    const channel = new BannerBroadcastChannel()
-    setBroadcastChannel(channel)
-
-    // Escutar atualizações
-    const cleanup = channel.onUpdate((id, version) => {
-      if (id === 'footer') {
-        mutate() // Refetch do SWR
+    const loadFooterBanner = () => {
+      const savedBanners = localStorage.getItem("gang-boyz-homepage-banners")
+      if (savedBanners) {
+        try {
+          const banners: any[] = JSON.parse(savedBanners)
+          const footerBannerData = banners.find(banner => banner.id === "footer-banner")
+          if (footerBannerData) {
+            setFooterBanner(footerBannerData)
+          }
+        } catch (error) {
+          console.error("Erro ao carregar banner Footer:", error)
+        }
       }
-    })
+    }
+
+    // Carregar inicialmente
+    loadFooterBanner()
+
+    // Escutar mudanças no localStorage
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "gang-boyz-homepage-banners") {
+        loadFooterBanner()
+      }
+    }
+
+    // Escutar mudanças customizadas (quando a mesma aba modifica)
+    const handleCustomStorageChange = () => {
+      loadFooterBanner()
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('bannerUpdated', handleCustomStorageChange)
 
     return () => {
-      cleanup()
-      channel.close()
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('bannerUpdated', handleCustomStorageChange)
     }
-  }, [mutate])
+  }, [])
 
-  if (!banner) {
+  if (!footerBanner) {
     return null // Não renderizar se não houver banner
   }
 
   return (
-    <div className="relative w-full h-[650px] overflow-hidden">
-      <BannerRenderer banner={banner} className="w-full h-full">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center text-white">
-            <h2 className="text-4xl md:text-6xl font-bold mb-4">
-              FOOTER BANNER
-            </h2>
-            <p className="text-xl md:text-2xl text-gray-200">
-              Última chance antes do footer
-            </p>
-          </div>
-        </div>
-      </BannerRenderer>
+    <div className="container mx-auto px-4 py-8">
+      <div className="relative w-full h-full">
+        {footerBanner.mediaType === 'video' ? (
+          <video
+            src={footerBanner.currentImage}
+            className="w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
+        ) : (
+          <img
+            src={footerBanner.currentImage}
+            alt={footerBanner.name}
+            className="w-full h-full object-cover"
+          />
+        )}
+        
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
+      </div>
     </div>
   )
 }

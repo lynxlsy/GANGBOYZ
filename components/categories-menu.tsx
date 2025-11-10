@@ -167,7 +167,7 @@ export function CategoriesMenu({ isOpen, onClose }: CategoriesMenuProps) {
                 router.push("/roupas")
                 onClose()
               }}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3"
+              className="w-full !red-bg !hover:red-bg-hover !text-white font-semibold py-3 !border-red-600"
             >
               Ver Todas as Roupas
             </Button>

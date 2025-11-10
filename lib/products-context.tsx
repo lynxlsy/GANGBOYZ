@@ -19,27 +19,46 @@ export interface Product {
   description: string
   status: "ativo" | "inativo"
   stock: number
+  createdAt?: any
+  updatedAt?: any
+  // Added new fields for recommendations
+  availableUnits?: number
+  availableSizes?: string[]
+  recommendationCategory?: string
+  // Added missing shipping information fields
+  freeShippingText?: string
+  freeShippingThreshold?: string
+  pickupText?: string
+  pickupStatus?: string
+  // Added technical information fields
+  weight?: string
+  dimensions?: string
+  material?: string
+  care?: string
+  origin?: string
+  warranty?: string
 }
 
 interface ProductsContextType {
   products: Product[]
-  addProduct: (product: Product) => void
-  updateProduct: (id: string, product: Partial<Product>) => void
-  deleteProduct: (id: string) => void
+  addProduct: (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+  updateProduct: (id: string, product: Partial<Product>) => Promise<void>
+  deleteProduct: (id: string) => Promise<void>
   getProductsByCategory: (category: string) => Product[]
   getActiveProductsByCategory: (category: string) => Product[]
+  loading: boolean
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined)
 
 export function ProductsProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
 
   // Dados iniciais de demonstração baseados nos produtos do admin
-  const initialProducts: Product[] = [
+  const initialProducts: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>[] = [
         // MOLETONS
         {
-          id: "MO001",
           name: "Moletom Gang BoyZ Classic",
           price: 89.90,
           originalPrice: 129.90,
@@ -57,7 +76,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
           stock: 15
         },
         {
-          id: "MO002",
           name: "Moletom Oversized Black",
           price: 99.90,
           originalPrice: 149.90,
@@ -75,7 +93,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
           stock: 8
         },
         {
-          id: "MO003",
           name: "Moletom Hoodie Red",
           price: 109.90,
           originalPrice: 159.90,
@@ -95,7 +112,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
 
         // CAMISETAS MANGA LONGA
         {
-          id: "CL001",
           name: "Camiseta Manga Longa Gang BoyZ Black",
           price: 59.90,
           originalPrice: 89.90,
@@ -113,7 +129,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
           stock: 12
         },
         {
-          id: "CL002",
           name: "Camiseta Manga Longa Oversized White",
           price: 64.90,
           originalPrice: 94.90,
@@ -134,7 +149,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
 
         // REGATAS
         {
-          id: "RG001",
           name: "Regata Gang BoyZ Classic Black",
           price: 39.90,
           originalPrice: 59.90,
@@ -154,7 +168,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
 
         // CALÇAS
         {
-          id: "CA002",
           name: "Calça Cargo Black",
           price: 79.90,
           originalPrice: 119.90,
@@ -174,7 +187,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
 
         // SHORTS/BERMUDAS
         {
-          id: "SH001",
           name: "Short Gang BoyZ Classic",
           price: 59.90,
           originalPrice: 89.90,
@@ -192,7 +204,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
           stock: 20
         },
         {
-          id: "SH002",
           name: "Bermuda Cargo Black",
           price: 69.90,
           originalPrice: 99.90,
@@ -208,53 +219,162 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
           description: "Bermuda cargo preta com bolsos laterais",
           status: "ativo",
           stock: 15
+        },
+
+        // CAMISETAS BÁSICAS
+        {
+          name: "Camiseta Básica Gang BoyZ Black",
+          price: 39.90,
+          originalPrice: 59.90,
+          image: "/placeholder-camiseta.jpg",
+          color: "Preto",
+          categories: ["Camisetas", "Básica"],
+          sizes: ["P", "M", "G", "GG"],
+          discountPercentage: 33,
+          installments: "1x de R$ 39.90",
+          brand: "Gang BoyZ",
+          isNew: false,
+          isPromotion: true,
+          description: "Camiseta básica preta 100% algodão",
+          status: "ativo",
+          stock: 25
+        },
+        {
+          name: "Camiseta Básica White",
+          price: 39.90,
+          originalPrice: 59.90,
+          image: "/placeholder-camiseta.jpg",
+          color: "Branco",
+          categories: ["Camisetas", "Básica"],
+          sizes: ["P", "M", "G", "GG"],
+          discountPercentage: 33,
+          installments: "1x de R$ 39.90",
+          brand: "Gang BoyZ",
+          isNew: false,
+          isPromotion: true,
+          description: "Camiseta básica branca 100% algodão",
+          status: "ativo",
+          stock: 22
+        },
+
+        // CAMISETAS MANGA CURTA
+        {
+          name: "Camiseta Manga Curta Gang BoyZ Classic",
+          price: 49.90,
+          originalPrice: 79.90,
+          image: "/placeholder-camiseta.jpg",
+          color: "Preto",
+          categories: ["Camisetas", "Manga Curta"],
+          sizes: ["P", "M", "G", "GG"],
+          discountPercentage: 38,
+          installments: "1x de R$ 49.90",
+          brand: "Gang BoyZ",
+          isNew: false,
+          isPromotion: true,
+          description: "Camiseta manga curta preta com logo Gang BoyZ estampado",
+          status: "ativo",
+          stock: 30
+        },
+        {
+          name: "Camiseta Manga Curta Oversized",
+          price: 54.90,
+          originalPrice: 84.90,
+          image: "/placeholder-camiseta.jpg",
+          color: "Branco",
+          categories: ["Camisetas", "Manga Curta"],
+          sizes: ["P", "M", "G", "GG"],
+          discountPercentage: 35,
+          installments: "2x de R$ 27.45",
+          brand: "Gang BoyZ",
+          isNew: true,
+          isPromotion: true,
+          description: "Camiseta manga curta oversized com corte moderno",
+          status: "ativo",
+          stock: 18
         }
-      ]
-  
-  // Carregar dados do localStorage na inicialização
+  ]
+
   useEffect(() => {
-    const savedProducts = localStorage.getItem("gang-boyz-products")
-    
-    if (savedProducts) {
+    // Carregar produtos do localStorage
+    const loadProducts = () => {
       try {
-        const parsedProducts = JSON.parse(savedProducts)
-        setProducts(parsedProducts)
+        const savedProducts = localStorage.getItem("gang-boyz-products")
+        if (savedProducts) {
+          setProducts(JSON.parse(savedProducts))
+        } else {
+          // Usar produtos iniciais se não houver no localStorage
+          const productsWithIds = initialProducts.map((product, index) => ({
+            ...product,
+            id: `prod-${Date.now()}-${index}`,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }))
+          setProducts(productsWithIds)
+          localStorage.setItem("gang-boyz-products", JSON.stringify(productsWithIds))
+        }
+        setLoading(false)
       } catch (error) {
-        console.error("Error parsing products from localStorage:", error)
-        setProducts(initialProducts)
-        localStorage.setItem("gang-boyz-products", JSON.stringify(initialProducts))
+        console.error("Erro ao carregar produtos:", error)
+        setLoading(false)
       }
-    } else {
-      setProducts(initialProducts)
-      localStorage.setItem("gang-boyz-products", JSON.stringify(initialProducts))
     }
+
+    loadProducts()
   }, [])
 
-  // Salvar no localStorage sempre que os dados mudarem
-  useEffect(() => {
-    localStorage.setItem("gang-boyz-products", JSON.stringify(products))
-  }, [products])
-
-  const addProduct = (product: Product) => {
-    setProducts(prev => [...prev, product])
+  const addProduct = async (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      const newProduct: Product = {
+        ...product,
+        id: `prod-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+      
+      const updatedProducts = [...products, newProduct]
+      setProducts(updatedProducts)
+      localStorage.setItem("gang-boyz-products", JSON.stringify(updatedProducts))
+    } catch (error) {
+      console.error("Erro ao adicionar produto:", error)
+      throw error
+    }
   }
 
-  const updateProduct = (id: string, updates: Partial<Product>) => {
-    setProducts(prev => 
-      prev.map(product => 
-        product.id === id ? { ...product, ...updates } : product
+  const updateProduct = async (id: string, product: Partial<Product>) => {
+    try {
+      const updatedProducts = products.map(p => 
+        p.id === id 
+          ? { 
+              ...p, 
+              ...product, 
+              updatedAt: new Date(),
+              id: p.id // Preservar o ID original
+            } 
+          : p
       )
-    )
+      
+      setProducts(updatedProducts)
+      localStorage.setItem("gang-boyz-products", JSON.stringify(updatedProducts))
+    } catch (error) {
+      console.error("Erro ao atualizar produto:", error)
+      throw error
+    }
   }
 
-  const deleteProduct = (id: string) => {
-    setProducts(prev => prev.filter(product => product.id !== id))
+  const deleteProduct = async (id: string) => {
+    try {
+      const updatedProducts = products.filter(p => p.id !== id)
+      setProducts(updatedProducts)
+      localStorage.setItem("gang-boyz-products", JSON.stringify(updatedProducts))
+    } catch (error) {
+      console.error("Erro ao deletar produto:", error)
+      throw error
+    }
   }
 
   const getProductsByCategory = (category: string) => {
     return products.filter(product => 
       product.categories.some(cat => 
-        cat.toLowerCase() === category.toLowerCase() || 
         cat.toLowerCase().includes(category.toLowerCase())
       )
     )
@@ -262,23 +382,25 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
 
   const getActiveProductsByCategory = (category: string) => {
     return products.filter(product => 
-      product.status === "ativo" &&
+      product.status === "ativo" && 
       product.categories.some(cat => 
-        cat.toLowerCase() === category.toLowerCase() || 
         cat.toLowerCase().includes(category.toLowerCase())
       )
     )
   }
 
   return (
-    <ProductsContext.Provider value={{
-      products,
-      addProduct,
-      updateProduct,
-      deleteProduct,
-      getProductsByCategory,
-      getActiveProductsByCategory
-    }}>
+    <ProductsContext.Provider
+      value={{
+        products,
+        addProduct,
+        updateProduct,
+        deleteProduct,
+        getProductsByCategory,
+        getActiveProductsByCategory,
+        loading
+      }}
+    >
       {children}
     </ProductsContext.Provider>
   )
@@ -287,7 +409,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
 export function useProducts() {
   const context = useContext(ProductsContext)
   if (context === undefined) {
-    throw new Error("useProducts must be used within a ProductsProvider")
+    throw new Error('useProducts must be used within a ProductsProvider')
   }
   return context
 }
