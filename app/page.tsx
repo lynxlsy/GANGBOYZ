@@ -1,89 +1,131 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { Header } from "@/components/header"
-import { Hero } from "@/components/hero"
-import { CategoryShowcase } from "@/components/category-showcase"
-import { BannersShowcase } from "@/components/banners-showcase"
-import { FeaturedProducts } from "@/components/featured-products"
-import { Footer } from "@/components/footer"
-import { useEditMode } from "@/lib/edit-mode-context"
-import { useBanner } from "@/hooks/use-banner"
-import { getBannerConfig } from "@/lib/banner-config"
-import { toast } from "sonner"
-import { ImageIcon, X, Upload, Trash2, Edit3, Save } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { CartDrawer } from "@/components/cart-drawer"
-import { WelcomeModal } from "@/components/welcome-modal"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { WhatsAppButton } from "@/components/whatsapp-button"
-import { NotificationSystem } from "@/components/notification-system"
-import { CookieBanner } from "@/components/cookie-banner"
-import { EditModeControls } from "@/components/edit-mode-controls"
-import { FooterBanner } from "@/components/footer-banner-v2"
-import { BannerStrip as HomepageBannerStrip } from "@/components/banner-strip"
-import { TopBannerStrip } from "@/components/top-banner-strip"
-import { RecommendationsSection } from "@/components/recommendations-section"
-import { HotSection } from "@/components/hot-section"
-import { OffersBanner } from "@/components/banner-renderer"
-import { CouponManagement } from "@/components/coupon-management"
-import { TestCouponSystem } from "@/components/test-coupon-system"
-import { OngoingPurchaseNotification } from "@/components/ongoing-purchase-notification"
-import { getContentById, updateContentById } from "@/lib/editable-content-utils"
-import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { useState, useEffect, useRef } from "react";
+import { Header } from "@/components/header";
+import { Hero } from "@/components/hero";
+import { CategoryShowcase } from "@/components/category-showcase";
+import { BannersShowcase } from "@/components/banners-showcase";
+import { FeaturedProducts } from "@/components/featured-products";
+import { Footer } from "@/components/footer";
+import { useEditMode } from "@/lib/edit-mode-context";
+import { useBanner } from "@/hooks/use-banner";
+import { getBannerConfig } from "@/lib/banner-config";
+import { toast } from "sonner";
+import { ImageIcon, X, Upload, Trash2, Edit3, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CartDrawer } from "@/components/cart-drawer";
+import { WelcomeModal } from "@/components/welcome-modal";
+import { ScrollToTop } from "@/components/scroll-to-top";
+import { WhatsAppButton } from "@/components/whatsapp-button";
+import { NotificationSystem } from "@/components/notification-system";
+import { CookieBanner } from "@/components/cookie-banner";
+import { EditModeControls } from "@/components/edit-mode-controls";
+import { FooterBanner } from "@/components/footer-banner-v2";
+import { BannerStrip as HomepageBannerStrip } from "@/components/banner-strip";
+import { TopBannerStrip } from "@/components/top-banner-strip";
+import { RecommendationsSection } from "@/components/recommendations-section";
+import { HotSection } from "@/components/hot-section";
+import { OffersBanner } from "@/components/banner-renderer";
+import { CouponManagement } from "@/components/coupon-management";
+import { TestCouponSystem } from "@/components/test-coupon-system";
+import { OngoingPurchaseNotification } from "@/components/ongoing-purchase-notification";
+import { getContentById, updateContentById } from "@/lib/editable-content-utils";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+// Função para inicializar banners hero padrão
+const initializeHeroBanners = () => {
+  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    const homepageBannersKey = "gang-boyz-homepage-banners";
+    const savedBanners = localStorage.getItem(homepageBannersKey);
+    
+    if (!savedBanners) {
+      // Configuração dos banners hero padrão
+      const defaultHeroBanners = [
+        {
+          id: "hero-banner-1",
+          name: "Banner Principal 1 (Hero)",
+          description: "Primeiro banner do carrossel principal da página inicial",
+          currentImage: "/hero-banner-1.jpg",
+          mediaType: "image",
+          dimensions: "1920x1080px",
+          format: "image/jpeg",
+          position: "Background da seção hero (abaixo da faixa de aviso)"
+        },
+        {
+          id: "hero-banner-2",
+          name: "Banner Principal 2 (Hero)",
+          description: "Segundo banner do carrossel principal da página inicial",
+          currentImage: "/hero-banner-2.jpg",
+          mediaType: "image",
+          dimensions: "1507x1333px",
+          format: "image/jpeg",
+          position: "Background da seção hero (abaixo da faixa de aviso)"
+        }
+      ];
+      
+      localStorage.setItem(homepageBannersKey, JSON.stringify(defaultHeroBanners));
+      console.log("Banners hero padrão inicializados");
+    }
+  }
+};
 
 export default function Home() {
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   // Handle useEditMode with error handling
-  let isEditMode = false
+  let isEditMode = false;
   try {
-    const editModeContext = useEditMode()
-    isEditMode = editModeContext.isEditMode
+    const editModeContext = useEditMode();
+    isEditMode = editModeContext.isEditMode;
   } catch (error) {
-    console.warn("Failed to initialize edit mode context:", error)
+    console.warn("Failed to initialize edit mode context:", error);
     // Fallback to localStorage
     if (typeof window !== 'undefined') {
-      isEditMode = localStorage.getItem('edit-mode-enabled') === 'true'
+      isEditMode = localStorage.getItem('edit-mode-enabled') === 'true';
     }
   }
   
+  // Initialize hero banners on component mount
+  useEffect(() => {
+    initializeHeroBanners();
+  }, []);
+  
   // State for about section
-  const [aboutTitle, setAboutTitle] = useState("Sobre a Gang Boyz")
-  const [aboutDescription, setAboutDescription] = useState("A Gang Boyz é uma marca de streetwear brasileira que traz autenticidade, estilo e qualidade para as ruas. Representamos a cultura urbana com roupas que expressam a verdadeira essência da juventude brasileira.")
-  const [editingAboutTitle, setEditingAboutTitle] = useState("Sobre a Gang Boyz")
-  const [editingAboutDescription, setEditingAboutDescription] = useState("A Gang Boyz é uma marca de streetwear brasileira que traz autenticidade, estilo e qualidade para as ruas. Representamos a cultura urbana com roupas que expressam a verdadeira essência da juventude brasileira.")
+  const [aboutTitle, setAboutTitle] = useState("Sobre a Gang Boyz");
+  const [aboutDescription, setAboutDescription] = useState("A Gang Boyz é uma marca de streetwear brasileira que traz autenticidade, estilo e qualidade para as ruas. Representamos a cultura urbana com roupas que expressam a verdadeira essência da juventude brasileira.");
+  const [editingAboutTitle, setEditingAboutTitle] = useState("Sobre a Gang Boyz");
+  const [editingAboutDescription, setEditingAboutDescription] = useState("A Gang Boyz é uma marca de streetwear brasileira que traz autenticidade, estilo e qualidade para as ruas. Representamos a cultura urbana com roupas que expressam a verdadeira essência da juventude brasileira.");
   // Removed isEditingAboutSection state as we're using inline editing directly
   
-  const [showBannersPanel, setShowBannersPanel] = useState(false)
-  const [showUploadModal, setShowUploadModal] = useState(false)
-  const [currentBannerId, setCurrentBannerId] = useState("")
-  const [uploading, setUploading] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [showBannersPanel, setShowBannersPanel] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [currentBannerId, setCurrentBannerId] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Hooks for banner data
-  const { banner: heroBanner1, updateBanner: updateHeroBanner1 } = useBanner('hero-banner-1')
-  const { banner: heroBanner2, updateBanner: updateHeroBanner2 } = useBanner('hero-banner-2')
-  const { banner: footerBanner, updateBanner: updateFooterBanner } = useBanner('footer-banner')
-  const { banner: offersBanner, updateBanner: updateOffersBanner } = useBanner('offers-banner')
+  const { banner: heroBanner1, updateBanner: updateHeroBanner1 } = useBanner('hero-banner-1');
+  const { banner: heroBanner2, updateBanner: updateHeroBanner2 } = useBanner('hero-banner-2');
+  const { banner: footerBanner, updateBanner: updateFooterBanner } = useBanner('footer-banner');
+  const { banner: offersBanner, updateBanner: updateOffersBanner } = useBanner('offers-banner');
   useEffect(() => {
     // Verificar se estamos no cliente
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined') return;
     
     // Verificar se o modal foi desabilitado pelo usuário
-    const modalDisabled = localStorage.getItem('welcome-modal-disabled')
-    const hasSeenWelcome = localStorage.getItem('gang-boyz-welcome-seen')
+    const modalDisabled = localStorage.getItem('welcome-modal-disabled');
+    const hasSeenWelcome = localStorage.getItem('gang-boyz-welcome-seen');
     
     if (modalDisabled === 'true') {
-      setShowWelcomeModal(false)
-      return
+      setShowWelcomeModal(false);
+      return;
     }
     
     // Mostrar modal de boas-vindas apenas uma vez
     if (!hasSeenWelcome) {
-      setShowWelcomeModal(true)
-      localStorage.setItem('gang-boyz-welcome-seen', 'true')
+      setShowWelcomeModal(true);
+      localStorage.setItem('gang-boyz-welcome-seen', 'true');
     }
     
     // Carregar script para corrigir contraste da faixa de promoção
@@ -100,142 +142,142 @@ export default function Home() {
   }, [])
 
   const handleEditBannerImage = (bannerId: string) => {
-    setCurrentBannerId(bannerId)
-    setShowUploadModal(true)
+    setCurrentBannerId(bannerId);
+    setShowUploadModal(true);
   }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files?.[0];
+    if (!file) return;
 
     // Check file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Arquivo muito grande. Máximo permitido: 5MB")
-      return
+      toast.error("Arquivo muito grande. Máximo permitido: 5MB");
+      return;
     }
 
     // Check file type
     if (!file.type.startsWith('image/')) {
-      toast.error("Apenas arquivos de imagem são permitidos")
-      return
+      toast.error("Apenas arquivos de imagem são permitidos");
+      return;
     }
 
-    setUploading(true)
+    setUploading(true);
     
     try {
-      const formData = new FormData()
-      formData.append('file', file)
+      const formData = new FormData();
+      formData.append('file', file);
       
       const response = await fetch('/api/uploads', {
         method: 'POST',
         body: formData,
-      })
+      });
 
       if (!response.ok) {
-        throw new Error('Erro no upload')
+        throw new Error('Erro no upload');
       }
 
-      const { url } = await response.json()
+      const { url } = await response.json();
       
-      console.log('Updating banner with URL:', url, 'Banner ID:', currentBannerId)
+      console.log('Updating banner with URL:', url, 'Banner ID:', currentBannerId);
       
       // Update the appropriate banner
       switch (currentBannerId) {
         case 'hero-banner-1':
-          console.log('Updating hero-banner-1')
-          const result1 = updateHeroBanner1({ currentImage: url })
-          console.log('Update result for hero-banner-1:', result1)
-          break
+          console.log('Updating hero-banner-1');
+          const result1 = updateHeroBanner1({ currentImage: url });
+          console.log('Update result for hero-banner-1:', result1);
+          break;
         case 'hero-banner-2':
-          console.log('Updating hero-banner-2')
-          const result2 = updateHeroBanner2({ currentImage: url })
-          console.log('Update result for hero-banner-2:', result2)
-          break
+          console.log('Updating hero-banner-2');
+          const result2 = updateHeroBanner2({ currentImage: url });
+          console.log('Update result for hero-banner-2:', result2);
+          break;
         case 'footer-banner':
-          console.log('Updating footer-banner')
-          updateFooterBanner({ currentImage: url })
-          break
+          console.log('Updating footer-banner');
+          updateFooterBanner({ currentImage: url });
+          break;
         case 'offers-banner':
-          console.log('Updating offers-banner')
-          updateOffersBanner({ currentImage: url })
-          break
+          console.log('Updating offers-banner');
+          updateOffersBanner({ currentImage: url });
+          break;
         default:
           // For grid banners, we need to update the collections
-          const config = getBannerConfig(currentBannerId)
+          const config = getBannerConfig(currentBannerId);
           if (config) {
-            const savedBanners = localStorage.getItem(config.storageKey)
+            const savedBanners = localStorage.getItem(config.storageKey);
             if (savedBanners) {
-              const banners = JSON.parse(savedBanners)
+              const banners = JSON.parse(savedBanners);
               const updatedBanners = banners.map((banner: any) => 
                 banner.id === currentBannerId ? { ...banner, currentImage: url } : banner
-              )
-              localStorage.setItem(config.storageKey, JSON.stringify(updatedBanners))
-              window.dispatchEvent(new CustomEvent(config.eventName))
+              );
+              localStorage.setItem(config.storageKey, JSON.stringify(updatedBanners));
+              window.dispatchEvent(new CustomEvent(config.eventName));
             }
           }
-          break
+          break;
       }
       
-      toast.success("Banner atualizado com sucesso!")
-      setShowUploadModal(false)
+      toast.success("Banner atualizado com sucesso!");
+      setShowUploadModal(false);
       
       // Force a refresh of all banner components
       setTimeout(() => {
-        window.dispatchEvent(new CustomEvent("homepageBannerUpdate"))
-      }, 100)
+        window.dispatchEvent(new CustomEvent("homepageBannerUpdate"));
+      }, 100);
     } catch (error) {
-      console.error("Erro no upload:", error)
-      toast.error("Erro ao fazer upload do banner")
+      console.error("Erro no upload:", error);
+      toast.error("Erro ao fazer upload do banner");
     } finally {
-      setUploading(false)
+      setUploading(false);
       if (fileInputRef.current) {
-        fileInputRef.current.value = ''
+        fileInputRef.current.value = '';
       }
     }
   }
 
   const getBannerTitle = (bannerId: string) => {
     switch (bannerId) {
-      case 'hero-banner-1': return "Banner Hero 1"
-      case 'hero-banner-2': return "Banner Hero 2"
-      case 'footer-banner': return "Banner Footer"
-      case 'offers-banner': return "Banner de Ofertas"
-      default: return "Banner"
+      case 'hero-banner-1': return "Banner Hero 1";
+      case 'hero-banner-2': return "Banner Hero 2";
+      case 'footer-banner': return "Banner Footer";
+      case 'offers-banner': return "Banner de Ofertas";
+      default: return "Banner";
     }
   }
 
   const getBannerConfigInfo = (bannerId: string) => {
-    const config = getBannerConfig(bannerId)
-    return config ? `${config.dimensions} (${config.mediaTypes.join(', ')})` : ""
+    const config = getBannerConfig(bannerId);
+    return config ? `${config.dimensions} (${config.mediaTypes.join(', ')})` : "";
   }
 
   const getBannerCurrentImage = (bannerId: string) => {
-    let imageUrl = "/placeholder-default.svg"
+    let imageUrl = "/placeholder-default.svg";
     
     switch (bannerId) {
       case 'hero-banner-1': 
-        imageUrl = heroBanner1?.currentImage || "/placeholder-default.svg"
-        break
+        imageUrl = heroBanner1?.currentImage || "/placeholder-default.svg";
+        break;
       case 'hero-banner-2': 
-        imageUrl = heroBanner2?.currentImage || "/placeholder-default.svg"
-        break
+        imageUrl = heroBanner2?.currentImage || "/placeholder-default.svg";
+        break;
       case 'footer-banner': 
-        imageUrl = footerBanner?.currentImage || "/placeholder-default.svg"
-        break
+        imageUrl = footerBanner?.currentImage || "/placeholder-default.svg";
+        break;
       case 'offers-banner': 
-        imageUrl = offersBanner?.currentImage || "/placeholder-default.svg"
-        break
+        imageUrl = offersBanner?.currentImage || "/placeholder-default.svg";
+        break;
       default: 
-        imageUrl = "/placeholder-default.svg"
-        break
+        imageUrl = "/placeholder-default.svg";
+        break;
     }
     
     // Don't add cache buster to data URLs (base64 images)
     if (imageUrl.startsWith('data:')) {
-      return imageUrl
+      return imageUrl;
     }
     
-    return `${imageUrl}?v=${Date.now()}`
+    return `${imageUrl}?v=${Date.now()}`;
   }
 
   // Banner information for the panel
@@ -249,37 +291,37 @@ export default function Home() {
   // Load about section content
   useEffect(() => {
     const loadAboutContent = async () => {
-      const titleContent = getContentById("about-title") || "Sobre a Gang Boyz"
-      const descriptionContent = getContentById("about-description") || "A Gang Boyz é uma marca de streetwear brasileira que traz autenticidade, estilo e qualidade para as ruas. Representamos a cultura urbana com roupas que expressam a verdadeira essência da juventude brasileira."
+      const titleContent = getContentById("about-title") || "Sobre a Gang Boyz";
+      const descriptionContent = getContentById("about-description") || "A Gang Boyz é uma marca de streetwear brasileira que traz autenticidade, estilo e qualidade para as ruas. Representamos a cultura urbana com roupas que expressam a verdadeira essência da juventude brasileira.";
       
-      setAboutTitle(titleContent)
-      setAboutDescription(descriptionContent)
+      setAboutTitle(titleContent);
+      setAboutDescription(descriptionContent);
     }
     
-    loadAboutContent()
+    loadAboutContent();
     
     // Listen for content updates
     const handleContentUpdate = () => {
-      loadAboutContent()
+      loadAboutContent();
     }
     
-    window.addEventListener('editableContentsUpdated', handleContentUpdate)
+    window.addEventListener('editableContentsUpdated', handleContentUpdate);
     return () => {
-      window.removeEventListener('editableContentsUpdated', handleContentUpdate)
+      window.removeEventListener('editableContentsUpdated', handleContentUpdate);
     }
-  }, [])
+  }, []);
   
   // Function to start editing about section
   const handleEditAboutSection = () => {
-    setEditingAboutTitle(aboutTitle)
-    setEditingAboutDescription(aboutDescription)
+    setEditingAboutTitle(aboutTitle);
+    setEditingAboutDescription(aboutDescription);
   }
   
   // Function to save about section edits
   const handleSaveAboutSection = () => {
     // Save to state
-    setAboutTitle(editingAboutTitle)
-    setAboutDescription(editingAboutDescription)
+    setAboutTitle(editingAboutTitle);
+    setAboutDescription(editingAboutDescription);
     
     // Save to localStorage/backend
     updateContentById("about-title", editingAboutTitle);
@@ -290,8 +332,8 @@ export default function Home() {
   
   // Function to cancel about section edit
   const handleCancelAboutSection = () => {
-    setEditingAboutTitle(aboutTitle)
-    setEditingAboutDescription(aboutDescription)
+    setEditingAboutTitle(aboutTitle);
+    setEditingAboutDescription(aboutDescription);
   }
   
   return (

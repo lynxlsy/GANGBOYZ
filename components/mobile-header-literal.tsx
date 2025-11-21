@@ -1,8 +1,10 @@
+"use client";
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { UserDropdown } from './user-dropdown';
 import { useRouter } from 'next/navigation';
 import { useUnifiedSearch } from '@/lib/unified-id-system';
 import { Search, X, Tag, Image as ImageIcon, Star, Flame, ArrowRight } from 'lucide-react';
+
 
 interface MobileHeaderLiteralProps {
   onMenuClick: () => void;
@@ -22,7 +24,8 @@ const MobileHeaderLiteral = ({
   cartItemsCount
 }: MobileHeaderLiteralProps) => {
   const router = useRouter();
-  const { search } = useUnifiedSearch();
+  // Only use search hook on client side
+  const { search } = typeof window !== 'undefined' ? useUnifiedSearch() : { search: () => [] };
   const [isScrolled, setIsScrolled] = useState(false);
   const [isBannerAtTop, setIsBannerAtTop] = useState(false);
   const [logoWidth, setLogoWidth] = useState(180);
@@ -32,10 +35,10 @@ const MobileHeaderLiteral = ({
   
   // Memoize search results to prevent infinite loops
   const searchResults = useMemo(() => {
-    if (searchQuery.trim().length >= 2) {
-      return search(searchQuery, 3); // Limit to 3 results
+    if (typeof window === 'undefined' || searchQuery.trim().length < 2) {
+      return [];
     }
-    return [];
+    return search(searchQuery, 3); // Limit to 3 results
   }, [searchQuery, search]);
 
   // Close search preview when clicking outside

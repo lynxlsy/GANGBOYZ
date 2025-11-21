@@ -21,10 +21,14 @@ export default function SearchResultsPage() {
   const [results, setResults] = useState<SearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
   
-  const { search, refreshCache } = useUnifiedSearch()
+  // Only use search hook on client side
+  const { search, refreshCache } = typeof window !== 'undefined' ? useUnifiedSearch() : { search: () => [], refreshCache: () => {} }
 
   // Search when query changes
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     if (query.trim().length >= 2) {
       setIsLoading(true)
       const searchResults = search(query, 50)
@@ -33,10 +37,13 @@ export default function SearchResultsPage() {
     } else {
       setResults([])
     }
-  }, [query])
+  }, [query, search])
 
   // Refresh cache when page loads
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     refreshCache()
   }, [])
 

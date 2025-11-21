@@ -213,9 +213,15 @@ export function HeaderHomepage({ hideMobileHeader = false }: { hideMobileHeader?
 
   return (
     <>
-      {/* Header Desktop - With black background */}
-      <div className="hidden md:block relative top-0 left-0 right-0 z-[60] bg-black">
-        <div className="flex items-center justify-between px-[80px] py-6">
+      {/* Header Desktop - Otimizado */}
+      <div className={`hidden md:block relative top-0 left-0 right-0 z-[60] transition-all duration-300 ${
+        isScrolled && !isBannerAtTop ? 'bg-black/90 backdrop-blur-md' : 'bg-transparent'
+      }`}>
+        <div className={`flex items-center justify-between transition-all duration-300 ${
+          isProductPage 
+            ? 'px-[80px] py-4' 
+            : 'px-[80px] py-6'
+        }`}>
           
           {/* Logo - Responsivo */}
           <div className="flex items-center">
@@ -226,34 +232,210 @@ export function HeaderHomepage({ hideMobileHeader = false }: { hideMobileHeader?
               <img
                 src="/logo-gang-boyz-new.svg"
                 alt="Gang BoyZ"
-                className="cursor-pointer transition-all duration-300 group-hover:scale-105 w-[230px]"
+                className={`cursor-pointer transition-all duration-300 group-hover:scale-105 ${
+                  isScrolled ? 'w-[200px]' : 'w-[230px]'
+                }`}
               />
             </button>
           </div>
 
-          {/* Empty space to maintain layout - removed all other elements */}
-          <div className="flex-1"></div>
+          {/* Menu Centralizado - Otimizado */}
+          <nav className="flex items-center space-x-4 lg:space-x-6">
+            {/* Botão Início */}
+            <button
+              onClick={() => handleNavigation("/")}
+              className="flex items-center space-x-1 font-medium text-lg hover:text-gray-300 transition-all duration-300 hover:scale-105 group px-3 py-2 rounded-lg hover:bg-white/10 backdrop-blur-sm cursor-pointer text-white"
+            >
+              <Home className="h-4 w-4" />
+              <span className="hidden lg:inline">Início</span>
+            </button>
+            
+            {menuItems.map((item) => {
+              const IconComponent = item.icon
+              const isOpen = openDropdown === item.key
+              
+              if (item.hasSubmenu) {
+                return (
+                  <div key={item.label} className="relative group">
+                    <button
+                      onClick={() => setOpenDropdown(isOpen ? null : item.key)}
+                      className={`flex items-center space-x-1 font-medium text-lg hover:text-gray-300 transition-all duration-300 hover:scale-105 group px-3 py-2 rounded-lg hover:bg-white/10 backdrop-blur-sm cursor-pointer ${
+                        item.isHot 
+                          ? 'text-red-500 font-bold' 
+                          : item.isBlue
+                          ? 'text-blue-500 font-bold'
+                          : 'text-white'
+                      }`}
+                      style={{ 
+                        fontFamily: item.isHot 
+                          ? 'Inter, Work Sans, sans-serif, cursive' 
+                          : 'Inter, Work Sans, sans-serif' 
+                      }}
+                    >
+                      <span className="hidden lg:inline">{item.label}</span>
+                      <span className="lg:hidden">{item.label.split(' ')[0]}</span>
+                      <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    
+                    {/* Submenu Dropdown - Melhorado */}
+                    {isOpen && (
+                      <div className="absolute top-full left-0 mt-2 w-64 bg-black/95 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl z-50 overflow-hidden">
+                        <div className="p-2">
+                          {submenus[item.key as keyof typeof submenus]?.map((subItem, index) => (
+                            <button
+                              key={subItem.label}
+                              onClick={() => handleNavigation(subItem.href)}
+                              className={`w-full text-left px-4 py-3 text-white hover:text-blue-400 hover:bg-white/10 rounded-lg transition-all duration-200 flex items-center justify-between group cursor-pointer transform translate-y-[-10px] opacity-0 animate-fadeInDown`}
+                              style={{ animationDelay: `${index * 50}ms` }}
+                            >
+                              <span className="font-medium">{subItem.label}</span>
+                              <div className="w-0 group-hover:w-2 h-0.5 bg-blue-400 transition-all duration-200"></div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+              }
+              
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => handleNavigation(item.href)}
+                  className={`flex items-center space-x-1 font-medium text-lg hover:text-gray-300 transition-all duration-300 hover:scale-105 group px-3 py-2 rounded-lg hover:bg-white/10 backdrop-blur-sm cursor-pointer ${
+                    item.isHot 
+                      ? 'text-red-500 font-bold' 
+                      : item.isBlue
+                      ? 'text-blue-500 font-bold'
+                      : 'text-white'
+                  }`}
+                  style={{ 
+                    fontFamily: item.isHot 
+                      ? 'Inter, Work Sans, sans-serif, cursive' 
+                      : 'Inter, Work Sans, sans-serif' 
+                  }}
+                >
+                  {IconComponent && (
+                    <IconComponent className={`h-5 w-5 transition-colors duration-300 ${
+                      item.isHot 
+                        ? 'text-red-500 group-hover:text-red-400' 
+                        : item.isBlue
+                        ? 'text-blue-500 group-hover:text-blue-400'
+                        : 'group-hover:text-yellow-400'
+                    }`} />
+                  )}
+                  <span className="hidden lg:inline">{item.label}</span>
+                  <span className="lg:hidden">{item.label.split(' ')[0]}</span>
+                </button>
+              )
+            })}
+          </nav>
 
-          {/* Only the logo, no other icons */}
+          {/* Ícones - Direita - Otimizado */}
+          <div className="flex items-center space-x-4 lg:space-x-6">
+            {/* Botão de Edit Mode - Apenas visível em telas maiores */}
+            <button 
+              onClick={toggleEditMode}
+              className={`hidden md:flex items-center space-x-1 font-medium text-sm px-3 py-2 rounded-lg transition-all duration-300 cursor-pointer ${
+                isEditMode 
+                  ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300' 
+                  : 'text-white hover:text-gray-300 hover:bg-white/10'
+              }`}
+              title={isEditMode ? "Desativar modo de edição" : "Ativar modo de edição"}
+            >
+              <span className="hidden lg:inline">
+                {isEditMode ? "Editar ON" : "Editar OFF"}
+              </span>
+              <span className="lg:hidden">
+                {isEditMode ? "ON" : "OFF"}
+              </span>
+            </button>
+            
+            {/* Botão de Pesquisa */}
+            <button 
+              onClick={() => setShowSearchBar(!showSearchBar)}
+              className="text-white hover:text-gray-300 transition-colors duration-200 cursor-pointer search-container group"
+              title="Pesquisar"
+            >
+              <Search className="h-6 w-6 group-hover:scale-110 transition-transform duration-200" />
+            </button>
+            
+            {/* Usuário Logado ou Botão de Login */}
+            {user ? (
+              <UserDropdown />
+            ) : (
+              <button 
+                onClick={() => handleNavigation('/auth/signin')}
+                className="text-white hover:text-gray-300 transition-colors duration-200 cursor-pointer group"
+                title="Entrar / Criar Conta"
+              >
+                <User className="h-6 w-6 group-hover:scale-110 transition-transform duration-200" />
+              </button>
+            )}
+            
+            {/* Favoritos */}
+            <button 
+              onClick={() => handleNavigation('/favoritos')}
+              className="text-white hover:text-gray-300 transition-colors duration-200 cursor-pointer group relative"
+              title="Favoritos"
+            >
+              <Heart className="h-6 w-6 group-hover:scale-110 transition-transform duration-200" />
+              {/* Indicador de favoritos */}
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+            </button>
+            
+            {/* Carrinho */}
+            <button 
+              onClick={openCart}
+              className="relative text-white hover:text-gray-300 transition-colors duration-200 cursor-pointer group"
+              title="Carrinho"
+            >
+              <ShoppingCart className="h-6 w-6 group-hover:scale-110 transition-transform duration-200" />
+              {cartItemsCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-white text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                  {cartItemsCount}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Barra de Pesquisa Desktop - Sempre visível na homepage abaixo do logo */}
+        <div className="px-[80px] pb-4 search-container">
+          <div className="max-w-2xl mx-auto">
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              const searchQuery = formData.get('search') as string;
+              if (searchQuery && searchQuery.trim()) {
+                router.push(`/busca?q=${encodeURIComponent(searchQuery.trim())}`);
+              }
+            }}>
+              <div className="relative">
+                <input
+                  name="search"
+                  type="text"
+                  placeholder="Pesquisar produtos..."
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300 backdrop-blur-sm"
+                />
+                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/60" />
+              </div>
+            </form>
+          </div>
         </div>
       </div>
 
-      {/* Header Mobile - With black background */}
+      {/* Header Mobile - Otimizado */}
       {!(hideMobileHeader || isProductDetailPage) && (
-        <div className="md:hidden absolute top-0 left-0 right-0 z-[60] bg-black py-3">
-          <div className="flex justify-center">
-            <button 
-              onClick={() => handleNavigation("/")}
-              className="flex items-center group"
-            >
-              <img
-                src="/logo-gang-boyz-new.svg"
-                alt="Gang BoyZ"
-                className="cursor-pointer transition-all duration-300 group-hover:scale-105 w-[180px]"
-              />
-            </button>
-          </div>
-        </div>
+        <MobileHeaderLiteral 
+          onMenuClick={() => setIsSidebarOpen(true)}
+          openCart={openCart}
+          handleNavigation={handleNavigation}
+          handleWhatsApp={handleWhatsApp}
+          user={user}
+          cartItemsCount={cartItemsCount}
+        />
       )}
 
       {/* Sidebar - Apenas Mobile */}

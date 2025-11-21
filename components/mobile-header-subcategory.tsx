@@ -1,8 +1,10 @@
+"use client";
 import { useState, useEffect } from "react"
 import { useCart } from "@/lib/cart-context"
 import { useRouter } from "next/navigation"
 import { Menu, Heart, ShoppingCart } from "lucide-react"
 import { Sidebar } from "@/components/sidebar"
+
 
 export function MobileHeaderSubcategory() {
   const { state, openCart } = useCart()
@@ -16,6 +18,9 @@ export function MobileHeaderSubcategory() {
   // Check if banner is positioned at top
   useEffect(() => {
     const checkBannerPosition = () => {
+      // Only run on client side
+      if (typeof window === 'undefined') return;
+      
       const bannerPosition = localStorage.getItem("gang-boyz-main-banner-position") || 
                            localStorage.getItem("gang-boyz-top-banner-position");
       setIsBannerAtTop(bannerPosition === "top");
@@ -29,19 +34,30 @@ export function MobileHeaderSubcategory() {
       setTimeout(checkBannerPosition, 100); // Small delay to ensure localStorage is updated
     };
     
-    window.addEventListener('mainBannerSettingsUpdated', handleBannerUpdate);
-    window.addEventListener('topBannerSettingsUpdated', handleBannerUpdate);
+    // Only add event listeners on client side
+    if (typeof window !== 'undefined') {
+      window.addEventListener('mainBannerSettingsUpdated', handleBannerUpdate);
+      window.addEventListener('topBannerSettingsUpdated', handleBannerUpdate);
+    }
     
     // Detect scroll for background effect
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
+      if (typeof window !== 'undefined') {
+        setIsScrolled(window.scrollY > 50)
+      }
     }
-    window.addEventListener('scroll', handleScroll)
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', handleScroll)
+    }
     
     return () => {
-      window.removeEventListener('mainBannerSettingsUpdated', handleBannerUpdate);
-      window.removeEventListener('topBannerSettingsUpdated', handleBannerUpdate);
-      window.removeEventListener('scroll', handleScroll)
+      // Only remove event listeners on client side
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('mainBannerSettingsUpdated', handleBannerUpdate);
+        window.removeEventListener('topBannerSettingsUpdated', handleBannerUpdate);
+        window.removeEventListener('scroll', handleScroll)
+      }
     };
   }, []);
 

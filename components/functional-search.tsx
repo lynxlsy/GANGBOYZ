@@ -19,10 +19,14 @@ export function FunctionalSearch({ className = "" }: FunctionalSearchProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   
-  const { search, refreshCache } = useUnifiedSearch()
+  // Only use search hook on client side
+  const { search, refreshCache } = typeof window !== 'undefined' ? useUnifiedSearch() : { search: () => [], refreshCache: () => {} }
 
   // Search when query changes
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     if (query.trim().length >= 2) {
       setIsLoading(true)
       const searchResults = search(query, 8)
@@ -33,10 +37,13 @@ export function FunctionalSearch({ className = "" }: FunctionalSearchProps) {
       setResults([])
       setIsOpen(false)
     }
-  }, [query])
+  }, [query, search])
 
   // Close when clicking outside
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     function handleClickOutside(event: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsOpen(false)
@@ -49,6 +56,9 @@ export function FunctionalSearch({ className = "" }: FunctionalSearchProps) {
 
   // Refresh cache when page loads
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     refreshCache()
   }, [])
 

@@ -102,7 +102,10 @@ export class UnifiedSearchSystem {
   private loadThrottle: number = 5000 // 5 seconds throttle for loading
   
   private constructor() {
-    this.loadAllItems()
+    // Only load items on the client side
+    if (typeof window !== 'undefined') {
+      this.loadAllItems()
+    }
   }
   
   public static getInstance(): UnifiedSearchSystem {
@@ -114,6 +117,11 @@ export class UnifiedSearchSystem {
   
   // Carregar todos os itens do localStorage com throttling
   private loadAllItems(): void {
+    // Check if we're on the client side
+    if (typeof window === 'undefined') {
+      return
+    }
+    
     const now = Date.now()
     // Only load if more than 5 seconds have passed since last load
     if (now - this.lastLoadTime < this.loadThrottle) {
@@ -135,34 +143,38 @@ export class UnifiedSearchSystem {
     ]
     
     sections.forEach(section => {
-      const data = localStorage.getItem(section)
-      if (data) {
-        try {
-          const items = JSON.parse(data)
-          if (Array.isArray(items)) {
-            items.forEach(item => {
-              if (item.id) {
-                this.allItems.push({
-                  id: item.id,
-                  type: this.detectType(item.id, item),
-                  name: item.name || item.title || 'Sem nome',
-                  description: item.description || '',
-                  price: item.price || 0,
-                  originalPrice: item.originalPrice || 0,
-                  image: item.image || '',
-                  category: item.category || '',
-                  isActive: item.isActive !== false,
-                  createdAt: item.createdAt || new Date().toISOString(),
-                  updatedAt: item.updatedAt || new Date().toISOString(),
-                  tags: this.generateTags(item),
-                  metadata: item
-                })
-              }
-            })
+      try {
+        const data = localStorage.getItem(section)
+        if (data) {
+          try {
+            const items = JSON.parse(data)
+            if (Array.isArray(items)) {
+              items.forEach(item => {
+                if (item.id) {
+                  this.allItems.push({
+                    id: item.id,
+                    type: this.detectType(item.id, item),
+                    name: item.name || item.title || 'Sem nome',
+                    description: item.description || '',
+                    price: item.price || 0,
+                    originalPrice: item.originalPrice || 0,
+                    image: item.image || '',
+                    category: item.category || '',
+                    isActive: item.isActive !== false,
+                    createdAt: item.createdAt || new Date().toISOString(),
+                    updatedAt: item.updatedAt || new Date().toISOString(),
+                    tags: this.generateTags(item),
+                    metadata: item
+                  })
+                }
+              })
+            }
+          } catch (error) {
+            console.error(`Erro ao carregar ${section}:`, error)
           }
-        } catch (error) {
-          console.error(`Erro ao carregar ${section}:`, error)
         }
+      } catch (error) {
+        console.error(`Erro ao acessar localStorage para ${section}:`, error)
       }
     })
     
@@ -283,7 +295,8 @@ export class UnifiedSearchSystem {
   
   // Buscar itens com caching
   public search(query: string, limit: number = 20): SearchResult[] {
-    if (!query.trim()) return []
+    // Return empty array if running on server or no query
+    if (typeof window === 'undefined' || !query.trim()) return []
     
     const cacheKey = `${query}-${limit}`
     const now = Date.now()
@@ -377,7 +390,10 @@ export class UnifiedSearchSystem {
   
   // Atualizar cache
   public refreshCache(): void {
-    this.loadAllItems()
+    // Only refresh cache on the client side
+    if (typeof window !== 'undefined') {
+      this.loadAllItems()
+    }
   }
   
   // Obter estatísticas
@@ -403,6 +419,11 @@ export class UnifiedSearchSystem {
   
   // Método para contar produtos ativos por categoria principal
   private getActiveProductCountByMainCategory(mainCategory: string): number {
+    // Check if we're on the client side
+    if (typeof window === 'undefined') {
+      return 0
+    }
+    
     // Carregar produtos do localStorage
     const sections = [
       'gang-boyz-products', // Produtos principais
@@ -410,21 +431,25 @@ export class UnifiedSearchSystem {
     ]
     
     let allProducts: any[] = []
-    
+
     sections.forEach(section => {
-      const data = localStorage.getItem(section)
-      if (data) {
-        try {
-          const items = JSON.parse(data)
-          if (Array.isArray(items)) {
-            allProducts = [...allProducts, ...items]
+      try {
+        const data = localStorage.getItem(section)
+        if (data) {
+          try {
+            const items = JSON.parse(data)
+            if (Array.isArray(items)) {
+              allProducts = [...allProducts, ...items]
+            }
+          } catch (error) {
+            console.error(`Erro ao carregar ${section}:`, error)
           }
-        } catch (error) {
-          console.error(`Erro ao carregar ${section}:`, error)
         }
+      } catch (error) {
+        console.error(`Erro ao acessar localStorage para ${section}:`, error)
       }
     })
-    
+
     // Contar produtos ativos que pertencem à categoria principal
     const activeProducts = allProducts.filter(product => {
       if (!product.status || product.status !== 'ativo') return false
@@ -455,21 +480,27 @@ export class UnifiedSearchSystem {
 
 // Hook para usar o sistema de busca
 export function useUnifiedSearch() {
-  const searchSystem = UnifiedSearchSystem.getInstance()
+  // Only get instance on the client side
+  const searchSystem = typeof window !== 'undefined' ? UnifiedSearchSystem.getInstance() : null
   
   const search = (query: string, limit?: number) => {
+    if (!searchSystem) return []
     return searchSystem.search(query, limit)
   }
   
   const refreshCache = () => {
-    searchSystem.refreshCache()
+    if (searchSystem) {
+      searchSystem.refreshCache()
+    }
   }
   
   const getStats = () => {
+    if (!searchSystem) return { total: 0, byType: {} }
     return searchSystem.getStats()
   }
   
   const getItemById = (id: string) => {
+    if (!searchSystem) return null
     return searchSystem.getItemById(id)
   }
   

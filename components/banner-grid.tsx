@@ -32,9 +32,16 @@ export function BannerGrid() {
   // Check if we're in edit mode
   useEffect(() => {
     const checkEditMode = () => {
-      // This is a simplified check - in a real implementation, you'd use the context
-      const editMode = localStorage.getItem('gang-boyz-edit-mode') === 'true'
-      setIsEditMode(editMode)
+      // Only run on client side
+      if (typeof window === 'undefined') return;
+
+      try {
+        // This is a simplified check - in a real implementation, you'd use the context
+        const editMode = localStorage.getItem('gang-boyz-edit-mode') === 'true'
+        setIsEditMode(editMode)
+      } catch (e) {
+        console.error('Error reading localStorage:', e);
+      }
     }
     
     checkEditMode()
@@ -44,21 +51,32 @@ export function BannerGrid() {
       checkEditMode()
     }
     
-    window.addEventListener('editModeChanged', handleEditModeChange)
+    // Only add event listener on client side
+    if (typeof window !== 'undefined') {
+      window.addEventListener('editModeChanged', handleEditModeChange)
+    }
     
     return () => {
-      window.removeEventListener('editModeChanged', handleEditModeChange)
+      // Only remove event listener on client side
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('editModeChanged', handleEditModeChange)
+      }
     }
   }, [])
 
   // Carregar coleções do localStorage
   useEffect(() => {
     const loadCollections = () => {
-      const savedCollections = localStorage.getItem("gang-boyz-collections")
-      if (savedCollections) {
-        setCollections(JSON.parse(savedCollections))
-      } else {
-        // Sem coleções padrão - aguardando configuração pelo admin
+      try {
+        const savedCollections = localStorage.getItem("gang-boyz-collections")
+        if (savedCollections) {
+          setCollections(JSON.parse(savedCollections))
+        } else {
+          // Sem coleções padrão - aguardando configuração pelo admin
+          setCollections([])
+        }
+      } catch (e) {
+        console.error('Error reading localStorage:', e);
         setCollections([])
       }
     }
@@ -131,11 +149,15 @@ export function BannerGrid() {
           ? { ...collection, image: url } 
           : collection
       )
-      
-      setCollections(updatedCollections)
-      localStorage.setItem("gang-boyz-collections", JSON.stringify(updatedCollections))
-      window.dispatchEvent(new CustomEvent('collectionsUpdated'))
-      
+
+      try {
+        setCollections(updatedCollections)
+        localStorage.setItem("gang-boyz-collections", JSON.stringify(updatedCollections))
+        window.dispatchEvent(new CustomEvent('collectionsUpdated'))
+      } catch (e) {
+        console.error('Error saving to localStorage:', e);
+      }
+
       toast.success("Imagem atualizada com sucesso!")
       setShowUploadModal(false)
     } catch (error) {

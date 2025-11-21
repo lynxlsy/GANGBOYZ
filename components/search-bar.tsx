@@ -21,10 +21,14 @@ export function SearchBar({ className = "" }: SearchBarProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   
-  const { search, refreshCache } = useUnifiedSearch()
+  // Only use search hook on client side
+  const { search, refreshCache } = typeof window !== 'undefined' ? useUnifiedSearch() : { search: () => [], refreshCache: () => {} }
 
   // Buscar quando o usuário digita
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     if (query.trim().length >= 2) {
       setIsLoading(true)
       const searchResults = search(query, 10)
@@ -35,10 +39,13 @@ export function SearchBar({ className = "" }: SearchBarProps) {
       setResults([])
       setIsOpen(false)
     }
-  }, [query]) // Remove search from dependencies to prevent infinite loop
+  }, [query, search]) // Remove search from dependencies to prevent infinite loop
 
   // Fechar quando clica fora
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     function handleClickOutside(event: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsOpen(false)
@@ -51,6 +58,9 @@ export function SearchBar({ className = "" }: SearchBarProps) {
 
   // Atualizar cache quando a página carrega e quando produtos são adicionados
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     refreshCache()
     
     // Also refresh when products are added

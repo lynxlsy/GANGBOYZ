@@ -24,7 +24,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user } = useUser()
   const { activeTheme } = useTheme()
 
-  const { search, refreshCache } = useUnifiedSearch()
+  // Only use search hook on client side
+  const { search, refreshCache } = typeof window !== 'undefined' ? useUnifiedSearch() : { search: () => [], refreshCache: () => {} }
 
   const cartItemsCount = state.items?.reduce((total: number, item: any) => total + item.quantity, 0) || 0
 
@@ -89,8 +90,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const value = e.target.value
     setSearchQuery(value)
     
-    // Perform search if query is long enough
-    if (value.trim().length >= 2) {
+    // Only perform search on client side
+    if (typeof window !== 'undefined' && value.trim().length >= 2) {
       const results = search(value, 3) // Limit to 3 results
       setSearchResults(results)
     } else {
