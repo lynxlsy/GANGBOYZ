@@ -2,8 +2,9 @@ services:
   - type: web
     name: gang-boyz-ecommerce
     env: node
-    buildCommand: pnpm install --no-frozen-lockfile && pnpm run build
-    startCommand: pnpm run start
+    buildCommand: pnpm install --no-frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    autoDeploy: true
     envVars:
-      - key: NODE_ENV
-        value: production
+      - key: NODE_VERSION
+        value: 18
