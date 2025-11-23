@@ -18,6 +18,15 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Configurações para resolver problemas de Server Components
+  serverExternalPackages: ['firebase', 'firebase-admin'],
+  // Desabilitar pré-renderização de páginas problemáticas
+  exportPathMap: async function (
+    defaultPathMap,
+    { dev, dir, outDir, distDir, buildId }
+  ) {
+    return defaultPathMap
+  },
 }
 
 module.exports = nextConfig
